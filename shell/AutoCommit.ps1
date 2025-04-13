@@ -34,13 +34,8 @@ function Push-GitChanges {
 }
 
 # --- Ejecución ---
-Try {
-    Write-Host "Attempting to set location to: '$JavaSourcePath'"
-    Set-Location $JavaSourcePath
-} Catch {
-    # Mute the error output
-    Write-Host "Failed to set location to: '$JavaSourcePath'. Continuing..." # Optional: Log or display a muted message
-}
+Write-Host "Attempting to set location to: '$JavaSourcePath'"
+Set-Location $JavaSourcePath
 Add-GitChanges
 Commit_GitChanges
 Push-GitChanges
