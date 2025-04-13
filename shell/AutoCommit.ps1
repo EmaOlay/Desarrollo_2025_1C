@@ -1,5 +1,5 @@
 # --- Configuración ---
-$JavaSourcePath = "Desarrollo_2025_1C\Java\ADT\main\src"
+$JavaSourcePath = "Desarrollo_2025_1C"
 $CommitMessage = "codigo formateado ($(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'))"
 
 # --- Funciones ---
@@ -34,6 +34,7 @@ function Push-GitChanges {
 }
 
 # --- Ejecución ---
+Set-Location $JavaSourcePath
 Add-GitChanges
 Commit-GitChanges
 Push-GitChanges
