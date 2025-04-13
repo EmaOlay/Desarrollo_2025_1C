@@ -1,5 +1,5 @@
 # --- Configuración ---
-$JavaSourcePath = "Desarrollo_2025_1C"
+$JavaSourcePath = "E:\Desarrollo\Desarrollo_2025_1C"
 $CommitMessage = "codigo formateado ($(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'))"
 
 # --- Funciones ---
@@ -35,9 +35,11 @@ function Push-GitChanges {
 
 # --- Ejecución ---
 Try {
+    Write-Host "Attempting to set location to: '$JavaSourcePath'"
     Set-Location $JavaSourcePath
 } Catch {
-    # Mute the output by doing nothing in the Catch block
+    # Mute the error output
+    Write-Host "Failed to set location to: '$JavaSourcePath'. Continuing..." # Optional: Log or display a muted message
 }
 Add-GitChanges
 Commit_GitChanges
