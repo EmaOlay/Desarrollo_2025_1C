@@ -34,7 +34,11 @@ function Push-GitChanges {
 }
 
 # --- Ejecución ---
-Set-Location $JavaSourcePath;
+Try {
+    Set-Location $JavaSourcePath
+} Catch {
+    # Mute the output by doing nothing in the Catch block
+}
 Add-GitChanges
 Commit_GitChanges
 Push-GitChanges
