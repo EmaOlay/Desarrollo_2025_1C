@@ -12,6 +12,11 @@ public class StaticStack implements Stack {
         count = 0;
     }
 
+    public StaticStack(int a) {
+        array = new int[a];
+        count = 0;
+    }
+
     @Override
     public void add(int a) {
         if(count == MAX_SIZE) {
@@ -29,6 +34,15 @@ public class StaticStack implements Stack {
         count--;
     }
 
+    public int poll(){
+        if(this.isEmpty()) {
+            throw new RuntimeException("No se puede desapilar una pila vacía.");
+        }
+        int LastElement = array[this.count-1];
+        this.count--;
+        return LastElement;
+
+    }
     @Override
     public int getTop() {
         if(this.isEmpty()) {
