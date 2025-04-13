@@ -34,7 +34,7 @@ function Push-GitChanges {
 }
 
 # --- Ejecución ---
-Set-Location $JavaSourcePath
+Set-Location $JavaSourcePath;
 Add-GitChanges
 Commit_GitChanges
 Push-GitChanges
