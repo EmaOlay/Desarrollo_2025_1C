@@ -13,7 +13,7 @@ function Add-GitChanges {
     Write-Host "Cambios añadidos."
 }
 
-function Commit-GitChanges {
+function Commit_GitChanges {
     Write-Host "Commitiendo los cambios..."
     git commit -m "$CommitMessage"
     if ($LASTEXITCODE -ne 0) {
@@ -36,7 +36,7 @@ function Push-GitChanges {
 # --- Ejecución ---
 Set-Location $JavaSourcePath
 Add-GitChanges
-Commit-GitChanges
+Commit_GitChanges
 Push-GitChanges
 
 Write-Host "Proceso completado."
