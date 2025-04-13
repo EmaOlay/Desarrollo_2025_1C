@@ -11,11 +11,11 @@ public class FlatDequeueUtil_Test {
         testReverse();
         testPrint();
         testCopy();
-        testFilterInPlace();
         testMapInPlace();
         testFindFirst();
         testAllMatch();
         testCount();
+        testGetN();
     }
 
     public static void testReverse() {
@@ -65,22 +65,6 @@ public class FlatDequeueUtil_Test {
         reportResult("testCopy - Caso 2 (múltiples elementos)", copyCorrect && originalUnchanged);
     }
 
-    public static void testFilterInPlace() {
-        System.out.println("\nEjecutando prueba: testFilterInPlace");
-        FlatDequeueMutable queue1 = new FlatDequeueMutable();
-        FlatDequeueUtil.filterInPlace(queue1, n -> n % 2 == 0);
-        reportResult("testFilterInPlace - Caso 1 (cola vacía)", queue1.isEmpty());
-
-        FlatDequeueMutable queue2 = new FlatDequeueMutable();
-        queue2.add(1);
-        queue2.add(2);
-        queue2.add(3);
-        queue2.add(4);
-        FlatDequeueUtil.filterInPlace(queue2, n -> n % 2 == 0);
-        reportResult("testFilterInPlace - Caso 2 (múltiples elementos)",
-                     queue2.poll() == 2 && queue2.poll() == 4 && queue2.isEmpty());
-    }
-
     public static void testMapInPlace() {
         System.out.println("\nEjecutando prueba: testMapInPlace");
         FlatDequeueMutable queue1 = new FlatDequeueMutable();
@@ -99,23 +83,87 @@ public class FlatDequeueUtil_Test {
     public static void testFindFirst() {
         System.out.println("\nEjecutando prueba: testFindFirst");
         FlatDequeueMutable queue1 = new FlatDequeueMutable();
-        Integer result1 = FlatDequeueUtil.findFirst(queue1, n -> n > 2);
+        Integer result1 = FlatDequeueUtil.findFirst(queue1, 1);
         reportResult("testFindFirst - Caso 1 (cola vacía)", result1 == null);
 
         FlatDequeueMutable queue2 = new FlatDequeueMutable();
         queue2.add(1);
         queue2.add(3);
         queue2.add(2);
-        Integer result2 = FlatDequeueUtil.findFirst(queue2, n -> n > 2);
+        Integer result2 = FlatDequeueUtil.findFirst(queue2, 3);
         boolean originalUnchanged2 = queue2.poll() == 1 && queue2.poll() == 3 && queue2.poll() == 2 && queue2.isEmpty();
         reportResult("testFindFirst - Caso 2 (elemento encontrado)", result2 != null && result2 == 3 && originalUnchanged2);
 
         FlatDequeueMutable queue3 = new FlatDequeueMutable();
         queue3.add(1);
         queue3.add(2);
-        Integer result3 = FlatDequeueUtil.findFirst(queue3, n -> n > 2);
+        Integer result3 = FlatDequeueUtil.findFirst(queue3, 3);
         boolean originalUnchanged3 = queue3.poll() == 1 && queue3.poll() == 2 && queue3.isEmpty();
         reportResult("testFindFirst - Caso 3 (elemento no encontrado)", result3 == null && originalUnchanged3);
+    }
+
+    public static void testGetN() {
+        System.out.println("\nEjecutando prueba: testGetN");
+    
+        FlatDequeueMutable queue1 = new FlatDequeueMutable();
+        try {
+            FlatDequeueUtil.getN(queue1, 0);
+            reportResult("testGetN - Caso 1 (cola vacía)", false); // Debería lanzar excepción
+        } catch (RuntimeException e) {
+            reportResult("testGetN - Caso 1 (cola vacía)", e.getMessage().equals("No se puede obtener la posicion indicada."));
+        }
+    
+        FlatDequeueMutable queue2 = new FlatDequeueMutable();
+        queue2.add(10);
+        queue2.add(20);
+        queue2.add(30);
+        try {
+            int result2 = FlatDequeueUtil.getN(queue2, 1);
+            boolean originalUnchanged2 = queue2.poll() == 10 && queue2.poll() == 20 && queue2.poll() == 30 && queue2.isEmpty();
+            reportResult("testGetN - Caso 2 (posición válida)", result2 == 20 && originalUnchanged2);
+        } catch (RuntimeException e) {
+            reportResult("testGetN - Caso 2 (posición válida)", false);
+        }
+    
+        FlatDequeueMutable queue3 = new FlatDequeueMutable();
+        queue3.add(5);
+        try {
+            int get_res = FlatDequeueUtil.getN(queue3, 0);
+            boolean originalUnchanged3 = queue3.poll() == 5 && queue3.isEmpty();
+            reportResult("testGetN - Caso 3 (posición cero)", get_res == 5 && originalUnchanged3);
+        } catch (RuntimeException e) {
+            reportResult("testGetN - Caso 3 (posición cero)", false);
+        }
+    
+        FlatDequeueMutable queue4 = new FlatDequeueMutable();
+        queue4.add(1);
+        queue4.add(2);
+        try {
+            FlatDequeueUtil.getN(queue4, 2);
+            reportResult("testGetN - Caso 4 (posición fuera de rango)", false); // Debería lanzar excepción
+        } catch (RuntimeException e) {
+            reportResult("testGetN - Caso 4 (posición fuera de rango)", e.getMessage().equals("No se puede obtener la posicion indicada."));
+        }
+    
+        FlatDequeueMutable queue5 = new FlatDequeueMutable();
+        queue5.add(100);
+        queue5.add(200);
+        queue5.add(300);
+        queue5.add(400);
+        try {
+            int result5 = FlatDequeueUtil.getN(queue5, 3);
+            boolean originalUnchanged5 = queue5.poll() == 100 && queue5.poll() == 200 && queue5.poll() == 300 && queue5.poll() == 400 && queue5.isEmpty();
+            reportResult("testGetN - Caso 5 (última posición)", result5 == 400 && originalUnchanged5);
+        } catch (RuntimeException e) {
+            reportResult("testGetN - Caso 5 (última posición)", false);
+        }
+    
+        try {
+            FlatDequeueUtil.getN(null, 0);
+            reportResult("testGetN - Caso 6 (cola nula)", false); // Debería lanzar excepción
+        } catch (RuntimeException e) {
+            reportResult("testGetN - Caso 6 (cola nula)", e.getMessage().equals("No se puede obtener la posicion indicada."));
+        }
     }
 
     public static void testAllMatch() {

@@ -7,7 +7,24 @@ public class FlatDequeueUtil {
     private FlatDequeueUtil() {
         // Constructor privado para evitar la instanciación
     }
-
+    /**
+     * Devuelvo el elemento en position siendo position 0 index
+     * 
+     */
+    public static int getN(FlatDequeueMutable queue,int position) {
+        if (queue == null || queue.isEmpty() || queue.size() <= position) {
+            throw new RuntimeException("No se puede obtener la posicion indicada.");
+        }
+        int result = -1;
+        for (int i = 0 ; i< queue.size();i++){
+            int element = queue.poll();
+            if (i == position) {
+                result = element;
+            }
+            queue.add(element); // re-enqueue
+        }
+        return result;
+    }
     /**
      * Invierte el orden de los elementos en una FlatDequeueMutable in-place
      *
@@ -199,7 +216,7 @@ public class FlatDequeueUtil {
      * sin estructuras externas.
      * Devuelve el elemento si se encuentra, o null si no. La cola no se modifica.
      */
-    public static Integer findFirst(FlatDequeueMutable queue, java.util.function.IntPredicate predicate) {
+    public static Integer findFirst(FlatDequeueMutable queue, int number) {
         if (queue == null || queue.isEmpty()) {
             return null;
         }
@@ -207,13 +224,10 @@ public class FlatDequeueUtil {
         Integer foundElement = null;
         for (int i = 0; i < size; i++) {
             int element = queue.poll();
-            if (predicate.test(element)) {
+            if (element == number) {
                 foundElement = element;
             }
             queue.add(element); // Re-enqueue
-            if (foundElement != null) {
-                break;
-            }
         }
         return foundElement;
     }
