@@ -81,8 +81,79 @@ public class VersionedStack implements Stack {
         return this.matriz[tops[currentVersionIndex]][currentVersionIndex];
     }
 
+    public int getTop(int version) {
+        if (this.isEmpty()) {
+            throw new RuntimeException("Cannot get top of an empty stack.");
+        }
+        return this.matriz[tops[version]][version];
+    }
+
     @Override
     public boolean isEmpty() {
         return tops[currentVersionIndex] == -1;
     }
+
+    public void printVersion(int versionIndex) {
+        if (versionIndex < 0 || versionIndex >= this.nextVersionIndex) {
+            throw new IndexOutOfBoundsException("Índice de versión inválido o versión eliminada: " + versionIndex);
+        }
+        System.out.print("Versión " + versionIndex + ": [");
+        for (int i = 0; i <= this.getTop(); i++) {
+            System.out.print(this.matriz[i][versionIndex]);
+            if (i < this.getTop()) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println("]");
+    }
+
+    public int getCurrentVersion() {
+        return this.currentVersionIndex;
+    }
+
+    /**
+     * Crea una nueva versión de la VersionedStack a partir de una versión existente.
+     * La nueva versión se convierte en la versión actual de la pila.
+     *
+     * Precondiciones:
+     * - `stack` no debe ser null.
+     * - `versionIndex` debe ser un índice válido dentro del rango de versiones existentes (0-based).
+     *
+     * Postcondiciones:
+     * - Se crea una nueva versión de la pila que es una copia de la versión especificada.
+     * - La `currentVersionIndex` del `stack` se actualiza para apuntar a la nueva versión creada.
+     * - Si el índice de la versión es inválido o se alcanza el límite de versiones, se lanza una excepción.
+     *
+     * Estrategia de Implementación:
+     * 1. Se verifica si la pila es null. Si lo es, se lanza una excepción.
+     * 2. Se verifica si el `versionIndex` está dentro del rango válido de versiones. Si no lo está, se lanza una excepción `IndexOutOfBoundsException`.
+     * 3. Se verifica si se ha alcanzado el límite máximo de versiones. Si es así, se lanza una `RuntimeException`.
+     * 4. Se obtiene el estado (los elementos y el tope) de la versión especificada.
+     * 5. Se copia este estado a la siguiente posición disponible en la matriz de versiones.
+     * 6. Se actualiza el `tops` array para la nueva versión.
+     * 7. Se actualiza el `currentVersionIndex` para que apunte a la nueva versión.
+     * 8. Se incrementa el `nextVersionIndex`.
+     */
+    public void createVersionFrom(int versionIndex) {
+        if (versionIndex < 0 || versionIndex >= this.nextVersionIndex) {
+            throw new IndexOutOfBoundsException("Índice de versión inválido: " + versionIndex);
+        }
+    
+        int topOfSourceVersion = this.tops[versionIndex]; // Obtener el tope de la versión específica
+    
+        if (this.nextVersionIndex == MAX_VERSIONS) {
+            throw new RuntimeException("Version limit reached");
+        }
+    
+        // Copiar los elementos de la versión fuente a la nueva versión
+        for (int i = 0; i <= topOfSourceVersion; i++) {
+            this.matriz[i][this.nextVersionIndex] = this.matriz[i][versionIndex];
+        }
+    
+        this.tops[this.nextVersionIndex] = topOfSourceVersion;
+        this.currentVersionIndex = this.nextVersionIndex;
+        this.nextVersionIndex++;
+    }
+
+
 }

@@ -2,6 +2,7 @@
 package TestManual;
 
 import model.VersionedStack;
+import util.VersionedStackUtil;
 
 public class VersionedStackManualTest {
 
@@ -11,10 +12,9 @@ public class VersionedStackManualTest {
         testPushAndGetTop();
         testPop();
         testIsEmpty();
-        // testVersionCreationOnPush();
-        // testVersionCreationOnPop();
-        // Falta implementar las pruebas para deleteVersion y createVersionFrom (P(a) y P(b))
-        // y goToVersion (P(c) - a elección).
+        testPrintVersion();
+        testCreateVersionFrom();
+        // Falta implementar las pruebas para deleteVersion y goToVersion (P(a) y P(c)).
     }
 
     public static void testPushAndGetTop() {
@@ -45,7 +45,7 @@ public class VersionedStackManualTest {
             stack.remove();
             reportResult("testPop - Versión 0: pop en pila vacía", false); // Debería lanzar excepción
         } catch (RuntimeException e) {
-            reportResult("testPop - Versión 0: pop en pila vacía (excepción)", e.getMessage().equals("Can't unstack current version."));
+            reportResult("testPop - Versión 0: pop en pila vacía (excepción)", e.getMessage().equals("Can't unstack an empty version."));
         }
 
         stack.add(5); // Versión 1: [5]
@@ -61,7 +61,7 @@ public class VersionedStackManualTest {
             stack.remove(); // Versión 5 (intento de pop en vacía)
             reportResult("testPop - Versión 5: pop en pila vacía", false); // Debería lanzar excepción
         } catch (RuntimeException e) {
-            reportResult("testPop - Versión 5: pop en pila vacía (excepción)", e.getMessage().equals("Can't unstack current version."));
+            reportResult("testPop - Versión 5: pop en pila vacía (excepción)", e.getMessage().equals("Can't unstack an empty version."));
         }
     }
 
@@ -79,40 +79,48 @@ public class VersionedStackManualTest {
         reportResult("testIsEmpty - Versión 2: después de remove", stack.isEmpty());
     }
 
-    public static void testVersionCreationOnPush() {
-        System.out.println("\nEjecutando prueba: testVersionCreationOnPush");
+    public static void testPrintVersion() {
+        System.out.println("\nEjecutando prueba: testPrintVersion");
         VersionedStack stack = new VersionedStack(5);
 
-        // Versión 0 (inicial): []
-
         stack.add(1); // Versión 1: [1]
-        // Para verificar manualmente, observar la estructura interna (matriz y tops) después de la operación.
-        // Se espera que nextVersionIndex haya incrementado.
-
         stack.add(2); // Versión 2: [1, 2]
-        // Verificar nuevamente la estructura interna.
-
         stack.add(3); // Versión 3: [1, 2, 3]
-        // Verificar nuevamente.
+
+        System.out.println("Imprimiendo Versión 0:");
+        stack.printVersion(0);
+
+        System.out.println("Imprimiendo Versión actual (3):");
+        stack.printVersion(3);
+
+        System.out.println("Imprimiendo Versión 2:");
+        stack.printVersion(2);
     }
 
-    public static void testVersionCreationOnPop() {
-        System.out.println("\nEjecutando prueba: testVersionCreationOnPop");
+    public static void testCreateVersionFrom() {
+        System.out.println("\nEjecutando prueba: testCreateVersionFrom");
         VersionedStack stack = new VersionedStack(5);
 
-        stack.add(1); // Versión 1: [1]
-        stack.add(2); // Versión 2: [1, 2]
+        stack.add(10); // Versión 1: [10]
+        stack.add(20); // Versión 2: [10, 20]
 
-        stack.remove(); // Versión 3: [1]
-        // Verificar la estructura interna para asegurar que se creó una nueva versión.
+        System.out.println("Creando versión desde la Versión 0:");
+        stack.createVersionFrom(0); // Versión 3: [] (current)
+        reportResult("testCreateVersionFrom - Versión 3 (desde 0): isEmpty", stack.isEmpty());
 
-        stack.remove(); // Versión 4: []
-        // Verificar nuevamente la creación de una nueva versión.
+        stack.add(5); // Versión 4: [5] (current)
+        System.out.println("Creando versión desde la Versión 2:");
+        stack.createVersionFrom(2); // Versión 5: [10, 20] (current)
+        reportResult("testCreateVersionFrom - Versión 5 (desde 2): getTop", stack.getTop() == 20);
+
+        try {
+            stack.createVersionFrom(100);
+            reportResult("testCreateVersionFrom - Índice fuera de rango", false);
+        } catch (IndexOutOfBoundsException e) {
+            reportResult("testCreateVersionFrom - Índice fuera de rango (excepción)", true);
+        }
+
     }
-
-    // Métodos de prueba para P(a), P(b) y P(c) (goToVersion)
-
-    // ... (Implementar testDeleteVersion, testCreateVersionFrom, testGoToVersion) ...
 
     public static void reportResult(String testName, boolean passed) {
         if (passed) {
