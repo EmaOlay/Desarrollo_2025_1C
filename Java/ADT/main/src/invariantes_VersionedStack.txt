@@ -1,0 +1,27 @@
+Invariantes de la Estructura VersionedStack
+
+Los siguientes son los invariantes que consideramos para la estructura de datos VersionedStack:
+
+1.  **`0 <= currentVersionIndex < nextVersionIndex <= MAX_VERSIONS`**:
+    * El índice de la versión actual siempre debe ser un índice válido dentro del rango de versiones creadas.
+    * El índice de la próxima versión disponible siempre debe ser mayor o igual al índice de la versión actual y nunca exceder el límite máximo de versiones.
+    * `nextVersionIndex` indica la cantidad total de versiones creadas hasta el momento (la siguiente posición libre).
+
+2.  **`-1 <= tops[i] < MAX_SIZE` para todo `0 <= i < nextVersionIndex`**:
+    * Para cada versión creada, el índice del tope (`tops[i]`) debe ser -1 (si la versión está vacía) o un índice válido dentro del array `matriz` que representa la pila (0 hasta `MAX_SIZE - 1`).
+
+3.  **Los elementos en `matriz[j][i]` para `0 <= j <= tops[i]` corresponden a los elementos de la versión `i` de la pila, con `matriz[tops[i]][i]` siendo la cima**:
+    * La columna `i` de la matriz almacena los elementos de la versión `i` de la pila.
+    * Los elementos se almacenan desde la fila 0 hasta la fila `tops[i]`.
+    * El elemento en la fila `tops[i]` es el elemento que se considera la cima de esa versión.
+
+4.  **La versión 0 siempre representa una pila vacía, con `tops[0] == -1`**:
+    * Al inicializar la `VersionedStack`, la primera versión (índice 0) siempre está vacía.
+
+5.  **Cada operación de `add` o `remove` crea una nueva versión (incrementa `nextVersionIndex`) basada en la versión actual**:
+    * Las operaciones que modifican la pila siempre generan una nueva entrada en la estructura de versiones, preservando el estado anterior.
+
+6.  **La operación `createVersionFrom(k)` crea una nueva versión que es una copia del estado de la versión `k`**:
+    * Esta operación permite ramificar el historial de versiones sin realizar una operación de `add` o `remove`.
+
+Estos invariantes ayudan a asegurar la integridad y la consistencia de la estructura `VersionedStack` a medida que se realizan operaciones y se crean nuevas versiones. Cualquier operación que viole estos invariantes indicaría un error en la implementación.

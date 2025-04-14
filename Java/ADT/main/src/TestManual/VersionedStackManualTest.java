@@ -19,7 +19,7 @@ public class VersionedStackManualTest {
 
     public static void testPushAndGetTop() {
         System.out.println("\nEjecutando prueba: testPushAndGetTop");
-        VersionedStack stack = new VersionedStack(5); // Inicializamos con un tamaño máximo para esta prueba
+        VersionedStack stack = new VersionedStack(); // Inicializamos con un tamaño máximo para esta prueba
         // Versión 0: Vacía
         reportResult("testPushAndGetTop - Versión 0: isEmpty", stack.isEmpty());
 
@@ -39,7 +39,7 @@ public class VersionedStackManualTest {
 
     public static void testPop() {
         System.out.println("\nEjecutando prueba: testPop");
-        VersionedStack stack = new VersionedStack(5);
+        VersionedStack stack = new VersionedStack();
 
         try {
             stack.remove();
@@ -67,7 +67,7 @@ public class VersionedStackManualTest {
 
     public static void testIsEmpty() {
         System.out.println("\nEjecutando prueba: testIsEmpty");
-        VersionedStack stack = new VersionedStack(5);
+        VersionedStack stack = new VersionedStack();
 
         // Versión 0:
         reportResult("testIsEmpty - Versión 0: inicialmente vacía", stack.isEmpty());
@@ -81,7 +81,7 @@ public class VersionedStackManualTest {
 
     public static void testPrintVersion() {
         System.out.println("\nEjecutando prueba: testPrintVersion");
-        VersionedStack stack = new VersionedStack(5);
+        VersionedStack stack = new VersionedStack();
 
         stack.add(1); // Versión 1: [1]
         stack.add(2); // Versión 2: [1, 2]
@@ -99,7 +99,7 @@ public class VersionedStackManualTest {
 
     public static void testCreateVersionFrom() {
         System.out.println("\nEjecutando prueba: testCreateVersionFrom");
-        VersionedStack stack = new VersionedStack(5);
+        VersionedStack stack = new VersionedStack();
 
         stack.add(10); // Versión 1: [10]
         stack.add(20); // Versión 2: [10, 20]
