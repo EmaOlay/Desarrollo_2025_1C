@@ -5,80 +5,43 @@ import model.VersionedStack;
 
 public class VersionedStackUtil {
 
-    private VersionedStackUtil() {
-        // Constructor privado para evitar la instanciación de la clase de utilidad
-    }
+    public static StaticStack mapToStaticStack(VersionedStack versionedStack, int versionIndex) {
+        if (versionIndex < 0 || versionIndex > versionedStack.getCurrentVersion()) {
+            throw new IndexOutOfBoundsException("Índice de versión inválido: " + versionIndex);
+        }
 
-    /**
-     * Convierte una instancia de VersionedStack a una instancia de StaticStack.
-     * La conversión toma la versión actual de la VersionedStack y la copia a la StaticStack.
-     *
-     * @param versionedStack La instancia de VersionedStack a convertir.
-     * @return Una nueva instancia de StaticStack con los elementos de la versión actual
-     * de la VersionedStack.
-     */
-    public static StaticStack mapToStaticStack(VersionedStack versionedStack) {
-        int currentVersionIndex = versionedStack.getCurrentVersion();
-        int topIndex = versionedStack.getTop();
-        StaticStack staticStack = new StaticStack(topIndex + 1); // Inicializar con el tamaño adecuado
-
-        VersionedStack tempStack = new VersionedStack();
-        // Pasar todos los elementos de enqueue a una pila temporal (invirtiendo el
-        // orden)
-
-
-
-
-        /*
-         * 
-         * 
-         * 
-         * A REVISAAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRRRR
-         */
+        int topSize = versionedStack.getTopIndex();
+        StaticStack staticStack = new StaticStack(topSize); // Creamos un StaticStack con la capacidad topSize
+        VersionedStack aux = new VersionedStack();
+        // Me guardo en un auxiliar
+        // Copiamos los elementos de la versión especificada al StaticStack
         while (!versionedStack.isEmpty()) {
-            tempStack.add(versionedStack.getTop());
-            versionedStack.remove();
-        }
-        // Pasar los elementos de la pila temporal a dequeue (manteniendo el orden FIFO)
-        while (!tempStack.isEmpty()) {
-            stackForDequeue.add(tempStack.getTop());
-            tempStack.remove();
+            aux.add(versionedStack.getTop());
+            versionedStack.remove(); // asumimos que nos alcanzan las vueltas a nivel de versiones para hacer remove
         }
 
-        for (int i = 0; i <= topIndex; i++) {
-            staticStack.add(versionedStack.add(versionedStack.getTop()));
-            versionedStack.remove();
+        // Copiamos los elementos de la versión especificada al StaticStack
+        // Y recreamos el versionedStack Entendemos que no es igual al inicial porque pasa por muchas versiones
+        while (!aux.isEmpty()) {
+            int elemento_agregar = aux.getTop();
+            staticStack.add(elemento_agregar);
+            versionedStack.add(elemento_agregar); // asumimos que nos alcanzan las vueltas para hacerle add
+            aux.remove();
         }
+
         return staticStack;
     }
 
     /**
-     * Convierte una instancia de StaticStack a una instancia de VersionedStack.
-     * La conversión crea una nueva VersionedStack con una única versión que contiene
-     * todos los elementos del StaticStack.
+     * Mapea la versión actual de un VersionedStack a un nuevo StaticStack.
+     * El StaticStack resultante contendrá los mismos elementos que la versión
+     * actual del VersionedStack, con el mismo orden.
      *
-     * @param staticStack La instancia de StaticStack a convertir.
-     * @return Una nueva instancia de VersionedStack con una versión inicial
-     * que contiene los elementos del StaticStack.
+     * @param versionedStack La pila versionada de la cual se tomará la versión actual.
+     * @return Un nuevo StaticStack que contiene los elementos de la versión actual
+     * del VersionedStack.
      */
-    public static VersionedStack mapToVersionedStack(StaticStack staticStack) {
-        VersionedStack versionedStack = new VersionedStack();
-        int count = staticStack.getCount();
-        // Para mantener el orden de la pila, los elementos del StaticStack
-        // se agregan a la VersionedStack en el mismo orden en que están en el array.
-        // Esto creará una única versión en VersionedStack.
-        for (int i = 0; i < count; i++) {
-            try {
-                // Acceder al array interno de StaticStack directamente (mala práctica general,
-                // pero necesario aquí sin métodos de acceso directos)
-                java.lang.reflect.Field arrayField = StaticStack.class.getDeclaredField("array");
-                arrayField.setAccessible(true);
-                int[] array = (int[]) arrayField.get(staticStack);
-                versionedStack.add(array[i]);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException("Error al acceder al array interno de StaticStack", e);
-            }
-        }
-        return versionedStack;
+    public static StaticStack mapCurrentVersionToStaticStack(VersionedStack versionedStack) {
+        return mapToStaticStack(versionedStack, versionedStack.getCurrentVersion());
     }
 }
