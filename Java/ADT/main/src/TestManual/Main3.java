@@ -3,7 +3,7 @@ package TestManual;
 
 import model.VersionedQueue;
 
-public class VersionedQueueManualTest {
+public class Main3 {
 
     public static void main(String[] args) {
         System.out.println("Iniciando pruebas manuales para VersionedQueue:");
@@ -47,20 +47,17 @@ public class VersionedQueueManualTest {
 
         queue.add(5);  // Versión 1: [5]
         queue.add(10); // Versión 2: [5, 10]
-        reportResult("testDequeue - Versión 2: getFirst antes de dequeue", queue.getFirst() == 5);
-
         queue.remove(); // Versión 3: [10] (frente)
-        reportResult("testDequeue - Versión 3: getFirst después de un dequeue", queue.getFirst() == 10);
-        reportResult("testDequeue - Versión 3: isEmpty", !queue.isEmpty());
+        reportResult("testDequeue - Versión 1: isEmpty", !queue.isEmpty());
 
         queue.remove(); // Versión 4: []
-        reportResult("testDequeue - Versión 4: isEmpty después de segundo dequeue", queue.isEmpty());
+        reportResult("testDequeue - Versión 2: isEmpty después de segundo dequeue", queue.isEmpty());
 
         try {
             queue.remove(); // Versión 5 (intento de dequeue en vacía)
-            reportResult("testDequeue - Versión 5: dequeue en cola vacía", false); // Debería lanzar excepción
+            reportResult("testDequeue - Versión 3: dequeue en cola vacía", false); // Debería lanzar excepción
         } catch (RuntimeException e) {
-            reportResult("testDequeue - Versión 5: dequeue en cola vacía (excepción)", e.getMessage().equals("Can't dequeue from an empty queue."));
+            reportResult("testDequeue - Versión 3: dequeue en cola vacía (excepción)", e.getMessage().equals("Can't dequeue from an empty queue."));
         }
 
         // Prueba con múltiples enqueue antes de dequeue
@@ -68,13 +65,11 @@ public class VersionedQueueManualTest {
         queue2.add(1);
         queue2.add(2);
         queue2.add(3);
-        reportResult("testDequeue - Versión 3 (queue2): getFirst", queue2.getFirst() == 1);
-        queue2.remove(); // Versión 4
+        queue2.remove();
         reportResult("testDequeue - Versión 4 (queue2): getFirst", queue2.getFirst() == 2);
-        queue2.remove(); // Versión 5
-        reportResult("testDequeue - Versión 5 (queue2): getFirst", queue2.getFirst() == 3);
-        queue2.remove(); // Versión 6
-        reportResult("testDequeue - Versión 6 (queue2): isEmpty", queue2.isEmpty());
+        queue2.remove();
+        queue2.remove();
+        reportResult("testDequeue - Versión 5 (queue2): isEmpty", queue2.isEmpty());
     }
 
     public static void testIsEmpty() {

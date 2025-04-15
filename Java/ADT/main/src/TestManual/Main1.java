@@ -4,17 +4,16 @@ package TestManual;
 import model.VersionedStack;
 // import util.VersionedStackUtil;
 
-public class VersionedStackManualTest {
+public class Main1 {
 
     public static void main(String[] args) {
         System.out.println("Iniciando pruebas manuales para VersionedStack:");
 
         testPushAndGetTop();
-        testPop();
+        testRemove();
         testIsEmpty();
         testPrintVersion();
         testCreateVersionFrom();
-        // Falta implementar las pruebas para deleteVersion y goToVersion (P(a) y P(c)).
     }
 
     public static void testPushAndGetTop() {
@@ -37,31 +36,31 @@ public class VersionedStackManualTest {
         reportResult("testPushAndGetTop - Versión 3: getTop", stack.getTop() == 30);
     }
 
-    public static void testPop() {
-        System.out.println("\nEjecutando prueba: testPop");
+    public static void testRemove() {
+        System.out.println("\nEjecutando prueba: testRemove");
         VersionedStack stack = new VersionedStack();
 
         try {
             stack.remove();
-            reportResult("testPop - Versión 0: pop en pila vacía", false); // Debería lanzar excepción
+            reportResult("testRemove - Versión 0: Remove en pila vacía", false); // Debería lanzar excepción
         } catch (RuntimeException e) {
-            reportResult("testPop - Versión 0: pop en pila vacía (excepción)", e.getMessage().equals("Can't unstack an empty version."));
+            reportResult("testRemove - Versión 0: Remove en pila vacía (excepción)", e.getMessage().equals("Can't unstack an empty version."));
         }
 
         stack.add(5); // Versión 1: [5]
         stack.add(10); // Versión 2: [5, 10]
 
         stack.remove(); // Versión 3: [5]
-        reportResult("testPop - Versión 3: getTop después de pop", stack.getTop() == 5);
+        reportResult("testRemove - Versión 3: getTop después de Remove", stack.getTop() == 5);
 
         stack.remove(); // Versión 4: []
-        reportResult("testPop - Versión 4: isEmpty después de pop", stack.isEmpty());
+        reportResult("testRemove - Versión 4: isEmpty después de Remove", stack.isEmpty());
 
         try {
-            stack.remove(); // Versión 5 (intento de pop en vacía)
-            reportResult("testPop - Versión 5: pop en pila vacía", false); // Debería lanzar excepción
+            stack.remove();
+            reportResult("testRemove - Versión 5: Remove en pila vacía", false); // Debería lanzar excepción
         } catch (RuntimeException e) {
-            reportResult("testPop - Versión 5: pop en pila vacía (excepción)", e.getMessage().equals("Can't unstack an empty version."));
+            reportResult("testRemove - Versión 5: Remove en pila vacía (excepción)", e.getMessage().equals("Can't unstack an empty version."));
         }
     }
 
