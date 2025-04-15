@@ -2,19 +2,11 @@ package TestManual;
 
 import model.VersionedStack;
 
-/**
- * Clase Main para probar las funcionalidades de VersionedStack del ejercicio 2
- * 
- * Ejercicio 2:
- * - P(a): Crear el arreglo con tamaño 1 inicialmente, y expandirlo 
- *   cuando sea necesario, copiando el contenido anterior.
- * - P(c): Guardar las versiones de manera eficiente sin depender de count.
- */
 public class Main2 {
 
     public static void main(String[] args) {
         System.out.println("=== EJERCICIO 2: Prueba de VersionedStack ===");
-        System.out.println("Implementación con puntos P(a) y P(c)");
+        System.out.println("Implementación con puntos P(a)");
         
         // Creamos una nueva instancia de VersionedStack
         VersionedStack stack = new VersionedStack();
@@ -66,15 +58,8 @@ public class Main2 {
             stack.printVersion(i);
         }
         
-        // Verificar la expansión del arreglo (P(a))
         System.out.println("\n=== Prueba de expansión de arreglo (P(a)) ===");
         System.out.println("Total de versiones creadas: " + stack.getVersionCount());
         System.out.println("Las versiones se han expandido automáticamente según sea necesario.");
-        
-        // Verificar el uso eficiente de memoria (P(c))
-        System.out.println("\n=== Prueba de uso eficiente de memoria (P(c)) ===");
-        System.out.println("Cada versión almacena exactamente los elementos necesarios.");
-        
-        System.out.println("\n=== Pruebas completadas ===");
     }
 } 
