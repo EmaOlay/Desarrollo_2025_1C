@@ -1,8 +1,8 @@
-// testmanual/VersionedStackManualTest.java
+
 package TestManual;
 
 import model.VersionedStack;
-// import util.VersionedStackUtil;
+
 
 public class Main1 {
 
