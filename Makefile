@@ -25,4 +25,4 @@ git:
 	@echo "Comandos de Git completados."
 
 # Todo en uno
-all: git
+all: format-sql git
