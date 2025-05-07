@@ -47,6 +47,7 @@ WHERE  f.provincia_cod <> 'BA'
 -- SELECT tiempo_entrega
 -- FROM fabricantes
 -- WHERE provincia_cod = 'BA'
+-- AND tiempo_entrega is not null
 --);
 -- 5. Mostrar el código y suma vendida de todos los fabricantes que no sean de BA
 -- que hayan
@@ -59,14 +60,15 @@ FROM   fabricantes f
     INNER JOIN facturas_det fd
         ON p.producto_cod = fd.producto_cod
 WHERE  f.provincia_cod <> 'BA'
-GROUP BY f.fabricante_cod having sum(fd.cantidad * p.precio_unit) > any(SELECT sum(fd2.cantidad * fd2.precio_unit)
-                                                                        FROM   fabricantes f2
-                                                                            INNER JOIN productos p2
-                                                                                ON f2.fabricante_cod = p2.fabricante_cod
-                                                                            INNER JOIN facturas_det fd2
-                                                                                ON p2.producto_cod = fd2.producto_cod
-                                                                        WHERE  f2.provincia_cod = 'BA'
-                                                                        GROUP BY f2.fabricante_cod);
+GROUP BY f.fabricante_cod having sum(fd.cantidad * p.precio_unit) > any(
+    SELECT sum(fd2.cantidad * fd2.precio_unit)
+    FROM   fabricantes f2
+        INNER JOIN productos p2
+            ON f2.fabricante_cod = p2.fabricante_cod
+        INNER JOIN facturas_det fd2
+            ON p2.producto_cod = fd2.producto_cod
+    WHERE  f2.provincia_cod = 'BA'
+    GROUP BY f2.fabricante_cod);
 
 
 -- 6. Seleccionar aquellos clientes cuya facturación supere el promedio facturado
