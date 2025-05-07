@@ -1,40 +1,53 @@
+use [trabajo_practico]
 /*Dada una tabla PERSONAS que contenga la siguiente estructura, seleccione las filas
-
-
-de la tabla tal que los valores del atributo candidato a ser primary key estén repetidos más de una vez. id (clave candidata) nombre varchar(20) apellido varchar(20)*/
+   
+   
+   de la tabla tal que los valores del atributo candidato a ser primary key estén repetidos más de una vez. id (clave candidata) nombre varchar(20) apellido varchar(20)*/
 SELECT id,
        nombre,
        apellido
-FROM   personas
-GROUP BY id having count(*) > 1;
-
-
-/*Realice una sentencia DELETE que borre las filas de la tabla PERSONAS del ejercicio
-   1 que estén duplicadas dejando sólo una fila con cada valor de la clave candidata.*/delete
-FROM   personas
+FROM   dbo.personas
 WHERE  id in (SELECT id
-              FROM   (SELECT id,
-                             row_number() OVER (PARTITION BY id
-                                                ORDER BY (SELECT null)) as rownum
-                      FROM   personas) as duplicates
-              WHERE  rownum > 1);
+              FROM   dbo.personas
+              GROUP BY id having count(*) > 1)
+/*Realice una sentencia DELETE que borre las filas de la tabla PERSONAS del ejercicio
+   1 que estén duplicadas dejando sólo una fila con cada valor de la clave candidata.*/delete delete
+FROM   dbo.personas
+WHERE  concat(id, nombre, apellido) in (SELECT concat(id, nombre, apellido)
+                                        FROM   (SELECT id,
+                                                       nombre,
+                                                       apellido,
+                                                       row_number() OVER (PARTITION BY id
+                                                                          ORDER BY (SELECT null)) as rownum
+                                                FROM   personas) as duplicates
+                                        WHERE  rownum > 1);
 
 
+SELECT count(*)
+FROM   dbo.personas
 /*Realizar una consulta que devuelva el monto total comprado por cliente en cada
    provincia de los fabricantes. Las columnas a mostrar son número de cliente, nombre
    del cliente, apellido del cliente, provincia_desc (de los fabricantes) y monto total
    comprado. Ordenar la información por número de cliente en forma ascendente y monto
-   total comprado en forma descendente.*/
-SELECT c.customer_id,
-       c.customer_name,
-       c.customer_lastname,
-       f.provincia_desc,
-       sum(i.total_amount) as monto_total_comprado
-FROM   customers c join invoices i
-        ON c.customer_id = i.customer_id join fabricantes f
-        ON i.fabricante_id = f.fabricante_id -- Assuming there's a fabricante_id in Invoices
-GROUP BY c.customer_id, c.customer_name, c.customer_lastname, f.provincia_desc
-ORDER BY c.customer_id asc, monto_total_comprado desc;
+   total comprado en forma descendente.*/use [uade_a_01];
+
+
+SELECT c.cliente_num,
+       c.nombre,
+       c.apellido,
+       prov.provincia_desc,
+       sum(f.precio_unit*f.cantidad) as monto_total_comprado
+FROM   dbo.clientes c join dbo.facturas i
+        ON c.cliente_num = i.cliente_num join dbo.facturas_det f
+        ON i.factura_num = f.factura_num
+    LEFT JOIN dbo.productos p
+        ON p.producto_cod = f.producto_cod
+    LEFT JOIN dbo.fabricantes fa
+        ON p.fabricante_cod = fa.fabricante_cod
+    LEFT JOIN dbo.provincias prov
+        ON prov.provincia_cod = fa.provincia_cod
+GROUP BY c.cliente_num, c.nombre, c.apellido, prov.provincia_desc
+ORDER BY c.cliente_num asc, monto_total_comprado desc;
 
 /*Sea una tabla VALORES que tiene un campo numérico secuencial Id, realizar una
 consulta que obtenga el valor del primer espacio libre de ese campo.*/
