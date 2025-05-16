@@ -1,0 +1,78 @@
+@startuml
+class Hospital {
+    nombre: String
+    direccion: String
+}
+class Area {
+    nombre: String
+    piso: int
+    +agregarHabitacion(h: Habitacion):void
+    +eliminarHabitacion(h: Habitacion):void
+    +obtenerHabitaciones(): list<Habitacion>
+    +buscarHabitacion(numero: int): Habitacion
+}
+class Habitacion{
+    numero: int
+    capacidadDeCamas: int
+    +getNumero(): int
+    +getCapacidadDeCamas(): int
+    +setNumero(numero: int): void
+    +setCapacidadDeCamas(capacidad: int): void
+}
+class Paciente {
+    idPaciente: int
+    nombre: String
+    dni:int
+    obraSocial: String
+    esInternado: boolean
+    fechaDeIngreso: Date
+    fechaDeAlta: Date
+    medicoResponsable: Medico
+    +internar(fechaDeIngreso: Date,fechaDeAlta: Date,medicoResponsable: Medico): void
+    +darDeAlta(fechaDeAlta: Date): void
+    +asignarMedico(medico: Medico): void
+    +asignarTratamiento(tratamiento: Tratamiento): void
+
+}
+
+class Profesional {
+    idProfesional: int
+    nombre: String
+    especialidad: String
+    +getIdProfesional(): int
+    +getNombre(): String
+    +getEspecialidad(): String
+    +asignarArea(area: Area): void
+}
+
+class Medico {
+    +prescribirTratamiento(tratamiento: Tratamiento, paciente: Paciente): void
+}
+class Enfermero {
+    +asistirPaciente(paciente: Paciente): void
+}
+class Tratamiento {
+    idTratamiento: int
+    nombre: String
+    dosisFrecuencia: String
+    description: String
+    +getIdTratamiento(): int
+    +getNombre(): String
+    +getDosisFrecuencia(): String
+    +getDescription(): String
+    +setDosisFrecuencia(dosisFrecuencia: String): void
+}
+
+'# Relaciones
+Hospital "1" -- "1..*" Area : contiene
+Area "1" -- "1..*" Habitacion : contiene
+Habitacion "1" -- "0..*" Paciente : contiene
+Paciente "1" -- "0..*" Tratamiento : recibe
+Paciente "1" -- "0..*" Profesional : asignado
+Profesional "1" -- "0..*" Paciente : asignado
+Profesional <|-- Medico
+Profesional <|-- Enfermero
+Tratamiento "1" -- "0..*" Paciente : asignado
+
+
+@enduml
