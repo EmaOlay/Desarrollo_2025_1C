@@ -149,3 +149,137 @@ WHERE  (SELECT count(distinct fd.producto_cod)
            and p2.fabricante_cod = 'DOTO') = (SELECT count(*)
                                    FROM   productos p
                                    WHERE  p.fabricante_cod = 'DOTO');
+
+-- 11. Tome el ejemplo del apunte de query recursivo, 
+-- qué debería modificar para que el query muestre todos
+--  los “clientes referentes hacia arriba” de un cierto cliente?
+
+WITH CTERecursivo AS ( -- CTE common table expression
+    -- SELECT RAIZ (ROOT) - El cliente inicial del que queremos encontrar los referentes hacia arriba
+    SELECT c.cliente_num, c.nombre, c.apellido, c.cliente_ref, r.nombre AS nombre_referido, r.apellido AS apellido_referido,
+           0 AS LEVEL, RIGHT('000000' + CAST(c.cliente_num AS varchar(MAX)), 6) AS sort
+    FROM clientes c LEFT JOIN clientes r ON (c.cliente_ref = r.cliente_num)
+    WHERE c.cliente_num = 109 -- Aquí especificas el cliente inicial
+
+    UNION ALL -- SELECTS RECURSIVOS (Resto del Arbol - Buscando hacia arriba)
+    SELECT r.cliente_num, r.nombre, r.apellido, r.cliente_ref, c.nombre, c.apellido,
+           LEVEL + 1, c.sort + '/' + RIGHT('000000' + CAST(r.cliente_num AS varchar(20)), 6) AS sort
+    FROM clientes r JOIN CTERecursivo c ON r.cliente_num = c.cliente_ref
+)
+-- SELECT que muestra resultado del WITH
+SELECT replicate('-', level * 4) + CAST(cliente_num as varchar) as arbol
+, *
+FROM CTERecursivo
+ORDER BY sort DESC; -- Ordena para mostrar la cadena de referencia desde el nivel más alto
+
+
+
+-- 12. Seleccionar el número, nombre y apellido de los clientes, Monto Total Comprado (p*q) y
+-- cantidad de facturas por cliente del producto (producto_cod) con mayor monto total vendido.
+-- Mostrar también el monto total del producto mas vendido.
+-- Para el cálculo del mayor producto vendido como de las facturas, se deben considerar
+-- solamente las facturas posteriores al 15 de marzo del 2021.
+-- Mostrar la información ordenada por el monto total comprado del producto por cliente en
+-- forma descendente y por cantidad de facturas en forma ascendente.
+-- Notas: No usar Store procedures, ni funciones de usuarios, ni tablas temporales. Una orden
+-- puede tener varios Items con el mismo producto.
+WITH prod_mas_vendido AS (
+    SELECT TOP 1 fd.producto_cod,
+           sum(fd.cantidad) as unidades_vendidas
+    FROM   productos p
+        INNER JOIN facturas_det fd
+            ON p.producto_cod = fd.producto_cod
+        INNER JOIN facturas f
+            ON f.factura_num = fd.factura_num
+    WHERE  f.fecha_emision > '2021-03-15'
+    GROUP BY fd.producto_cod
+    ORDER BY unidades_vendidas DESC
+),
+facturas_por_cliente_producto AS (
+    SELECT c.cliente_num,
+           fd.producto_cod,
+           count(distinct f.factura_num) as cantidad_facturas
+    FROM   clientes c
+        INNER JOIN facturas f
+            ON c.cliente_num = f.cliente_num
+        INNER JOIN facturas_det fd
+            ON f.factura_num = fd.factura_num
+        INNER JOIN productos p
+            ON fd.producto_cod = p.producto_cod
+    WHERE  f.fecha_emision > '2021-03-15'
+    GROUP BY c.cliente_num, fd.producto_cod
+),
+tot_vendido_producto AS (
+    SELECT fd.producto_cod,
+           sum(fd.cantidad * p.precio_unit) as total_vendido
+    FROM   productos p
+        INNER JOIN facturas_det fd
+            ON p.producto_cod = fd.producto_cod
+        INNER JOIN facturas f
+            ON f.factura_num = fd.factura_num
+    WHERE  f.fecha_emision > '2021-03-15'
+    GROUP BY fd.producto_cod
+)
+SELECT c.cliente_num,
+       c.nombre,
+       c.apellido,
+       sum(fd.cantidad * p.precio_unit) as total_comprado,
+       MAX(fpcp.cantidad_facturas) as cantidad_facturas, -- Este max es solo para no ponerlo en el group by
+       tvp.total_vendido as Monto_producto
+FROM   clientes c
+    INNER JOIN facturas f
+        ON c.cliente_num = f.cliente_num
+    INNER JOIN facturas_det fd
+        ON f.factura_num = fd.factura_num
+    INNER JOIN productos p
+        ON fd.producto_cod = p.producto_cod
+    -- Este Inner me fuerza a 1 solo producto
+    INNER JOIN prod_mas_vendido pmv
+        ON fd.producto_cod = pmv.producto_cod
+    INNER JOIN facturas_por_cliente_producto fpcp
+        ON c.cliente_num = fpcp.cliente_num
+        AND fd.producto_cod = fpcp.producto_cod
+    LEFT JOIN tot_vendido_producto tvp
+        ON fd.producto_cod = tvp.producto_cod
+GROUP BY c.cliente_num, c.nombre, c.apellido, tvp.total_vendido
+ORDER BY total_comprado DESC, c.cliente_num DESC,
+         cantidad_facturas ASC
+
+
+-- 13. Crear una consulta que devuelva lo siguiente:
+-- Número, Apellido y Nombre del cliente,
+-- Monto total comprado del cliente
+-- Número, Apellido, Nombre del Cliente Referido (ojo, No el referente ¡!)
+-- Monto total comprado por el referido mas un 10% de comisión
+-- Consideraciones.En el caso que un Cliente no tenga Referidos deberá mostrar los datos del referido en NULL.
+-- Para calcular la comisión del cliente se deberán sumar (cant*precio) de todos los productos
+-- comprados por el Cliente Referido cuyo código de producto sea menor a 1010
+-- Se deberá ordenar la salida por el nro de cliente y nro de referido ambos ascendentes.
+
+SELECT c.cliente_num,
+       c.apellido,
+       c.nombre,
+       sum(fd.cantidad * p.precio_unit) as total_comprado,
+       r.cliente_num as cliente_ref_num,
+       r.apellido as cliente_ref_apellido,
+       r.nombre as cliente_ref_nombre,
+       sum(fd2.cantidad * p2.precio_unit) * 1.1 as comision
+FROM   clientes c
+    LEFT JOIN clientes r
+        ON c.cliente_ref = r.cliente_num
+    INNER JOIN facturas f
+        ON c.cliente_num = f.cliente_num
+    INNER JOIN facturas_det fd
+        ON f.factura_num = fd.factura_num
+    INNER JOIN productos p
+        ON fd.producto_cod = p.producto_cod
+    -- Joins apuntando al referido
+    LEFT JOIN facturas f2
+        ON r.cliente_num = f2.cliente_num
+    LEFT JOIN facturas_det fd2
+        ON f2.factura_num = fd2.factura_num
+    LEFT JOIN productos p2
+        ON fd2.producto_cod = p2.producto_cod
+WHERE  p2.producto_cod < 1010
+GROUP BY c.cliente_num, c.apellido, c.nombre, r.cliente_num, r.apellido, r.nombre
+ORDER BY c.cliente_num, r.cliente_num;
