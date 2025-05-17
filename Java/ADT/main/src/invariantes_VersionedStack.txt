@@ -1,7 +1,5 @@
 Invariantes de la Estructura VersionedStack
 
-Los siguientes son los invariantes que consideramos para la estructura de datos VersionedStack:
-
 1.  **`0 <= currentVersionIndex < nextVersionIndex <= MAX_VERSIONS`**:
     * El índice de la versión actual siempre debe ser un índice válido dentro del rango de versiones creadas.
     * El índice de la próxima versión disponible siempre debe ser mayor o igual al índice de la versión actual y nunca exceder el límite máximo de versiones.
