@@ -1,5 +1,7 @@
 package Integrador2;
 
+import Integrador2.*;
+
 public class Main {
     // Main method to test the Predicate classes
     public static void main(String[] args) {
@@ -77,6 +79,70 @@ public class Main {
         System.out.println("Is empty: " + spq.isEmpty()); // true
         System.out.println("Has peak after all removes: " + spq.hasPeak()); // false
         System.out.println("--------------Fin Testing Ejercicio 4------------");
+        System.out.println("--------------Testing Ejercicio 5------------");
+        DuplaStack stack = new DuplaStack();
+        stack.add(new Dupla(1, 10));
+        stack.add(new Dupla(2, 20));
+        stack.add(new Dupla(3, 30));
+        stack.add(new Dupla(5, 50));
+ 
+        StaticPriorityQueue queue = new StaticPriorityQueue();
+        queue.add(2, 20);
+        queue.add(4, 40);
+        queue.add(3, 30);
+        queue.add(5, 50); 
+        Dupla[] comunes = Intersection.intersection(stack, queue);
+ 
+        System.out.println("Elementos comunes:");
+        for (int i = 0; i < comunes.length; i++) {
+            if (comunes[i] != null) { // Añade esta verificación
+                System.out.println("(" + comunes[i].first + ", " + comunes[i].second + ")");
+            }
+        }
+        System.out.println("--------------FIN Testing Ejercicio 5------------");
+        System.out.println("--------------Testing Ejercicio 6------------");
+        PriorityQueue queue2 = new UniquePriorityQueue();
+ 
+        // Agregamos elementos válidos
+        queue2.add(3, 100);
+        queue2.add(1, 50);
+        queue2.add(5, 200);
+ 
+        // Intentamos agregar con prioridad duplicada
+        queue2.add(3, 999); // debería mostrar mensaje y no agregar
+ 
+        // Mostramos el primer valor y su prioridad (debería ser el de prioridad 1)
+        System.out.println("Primer valor: " + queue2.getFirst());      // 50
+        System.out.println("Prioridad: " + queue2.getPriority());      // 1
+ 
+        // Removemos y mostramos el nuevo primero
+        queue2.remove(); // quita el de prioridad 1
+        System.out.println("Primer valor: " + queue2.getFirst());      // 100
+        System.out.println("Prioridad: " + queue2.getPriority());      // 3
+ 
+        // Verificamos si la cola está vacía al final
+        queue2.remove(); // quita 100
+        queue2.remove(); // quita 200
+        System.out.println("¿Cola vacía?: " + queue2.isEmpty());       // true
+        System.out.println("--------------FIN Testing Ejercicio 6------------");
+        System.out.println("--------------Testing Ejercicio 7------------");
+        Stack2 stack2 = new Stack2();
+        stack2.add(1);
+        stack2.add(2);
+        stack2.add(3);
+ 
+        System.out.println("Stack before: " + stack2.getTop());
+ 
+        StackUtils.addToBottomIfNotExists(stack2, 4);
+        StackUtils.addToBottomIfNotExists(stack2, 2); 
+ 
+        System.out.println("Stack after: ");
+        while (!stack2.isEmpty()) {
+            System.out.println(stack2.getTop());
+            stack2.remove();
+        }
+        System.out.println("--------------FIN Testing Ejercicio 7------------");
+
     }
     
 }

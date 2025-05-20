@@ -1,8 +1,8 @@
 package Integrador2;
 
-public interface List<T> {
+public interface List {
 
-    void add(T a);
+    void add(int a);
     int size();
     void remove();
     int get(int index);

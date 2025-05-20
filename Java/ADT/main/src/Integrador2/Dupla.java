@@ -8,5 +8,8 @@ public class Dupla {
         this.first = first;
         this.second = second;
     }
+    public boolean equals(Dupla other) {
+        return this.first == other.first && this.second == other.second;
+    }
 
 }
