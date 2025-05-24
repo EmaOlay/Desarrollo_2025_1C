@@ -11,5 +11,7 @@ public class Dupla {
     public boolean equals(Dupla other) {
         return this.first == other.first && this.second == other.second;
     }
-
+     public String toString() {
+        return "(" + this.first + ", " + this.second + ")";
+    }
 }

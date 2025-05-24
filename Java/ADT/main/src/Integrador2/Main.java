@@ -1,6 +1,6 @@
 package Integrador2;
 
-import Integrador2.*;
+
 
 public class Main {
     // Main method to test the Predicate classes
@@ -80,25 +80,27 @@ public class Main {
         System.out.println("Has peak after all removes: " + spq.hasPeak()); // false
         System.out.println("--------------Fin Testing Ejercicio 4------------");
         System.out.println("--------------Testing Ejercicio 5------------");
-        DuplaStack stack = new DuplaStack();
-        stack.add(new Dupla(1, 10));
+        // Crear pila de duplas
+        StackDupla stack = new StackDupla();
         stack.add(new Dupla(2, 20));
         stack.add(new Dupla(3, 30));
-        stack.add(new Dupla(5, 50));
+        stack.add(new Dupla(4, 40));
  
+        // Crear cola con prioridad
         StaticPriorityQueue queue = new StaticPriorityQueue();
-        queue.add(2, 20);
-        queue.add(4, 40);
-        queue.add(3, 30);
-        queue.add(5, 50); 
-        Dupla[] comunes = Intersection.intersection(stack, queue);
+        queue.add(1, 20); // prioridad 1, valor 20
+        queue.add(2, 50);
+        queue.add(3, 10);
  
-        System.out.println("Elementos comunes:");
-        for (int i = 0; i < comunes.length; i++) {
-            if (comunes[i] != null) { // Añade esta verificación
-                System.out.println("(" + comunes[i].first + ", " + comunes[i].second + ")");
-            }
-        }
+        // Calcular intersección
+        StackDupla result = Intersection.intersection(stack, queue);
+ 
+        // Mostrar resultado
+        System.out.println("Duplas comunes (por valor b):");
+        while (!result.isEmpty()) {
+            Dupla d = result.getTop();
+            System.out.println(d.toString());
+            result.remove();
         System.out.println("--------------FIN Testing Ejercicio 5------------");
         System.out.println("--------------Testing Ejercicio 6------------");
         PriorityQueue queue2 = new UniquePriorityQueue();
@@ -145,5 +147,6 @@ public class Main {
 
     }
     
+}
 }
 

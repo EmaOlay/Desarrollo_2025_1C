@@ -3,52 +3,61 @@ package Integrador2;
 
 public class Intersection {
  
-    public static Dupla[] intersection(Stack stack, PriorityQueue queue) {
-        Dupla[] pilaTemp = new Dupla[100];
-        int pilaSize = 0;
+    public static StackDupla intersection(StackDupla stack, StaticPriorityQueue queue) {
+        StackDupla result = new StackDupla();
+        StackDupla tempStack = new StackDupla();
+        StaticPriorityQueue tempQueue;
  
-        // Copiar pila sin modificarla
         while (!stack.isEmpty()) {
-            Dupla d = stack.getTop();
-            pilaTemp[pilaSize++] = d;
+            Dupla top = stack.getTop();
             stack.remove();
-        }
+            tempStack.add(top);
  
-        // Restaurar pila original
-        for (int i = pilaSize - 1; i >= 0; i--) {
-            stack.add(pilaTemp[i]);
-        }
- 
-        Dupla[] colaTemp = new Dupla[100];
-        int colaSize = 0;
- 
-        // Copiar cola sin modificarla
-        while (!queue.isEmpty()) {
-            int p = queue.getPriority();
-            int v = queue.getFirst();
-            colaTemp[colaSize++] = new Dupla(p, v);
-            queue.remove();
-        }
- 
-        // Comparar elementos
-        Dupla[] comunes = new Dupla[100];
-        int comunesSize = 0;
- 
-        for (int i = 0; i < pilaSize; i++) {
-            for (int j = 0; j < colaSize; j++) {
-                if (pilaTemp[i].equals(colaTemp[j])) {
-                    comunes[comunesSize++] = pilaTemp[i];
-                    break;
-                }
+            tempQueue = cloneQueue(queue);
+            if (containsValue(tempQueue, top.second)) {
+                result.add(top);
             }
         }
  
-        // Retornar solo los elementos comunes encontrados
-        Dupla[] resultado = new Dupla[comunesSize];
-        for (int i = 0; i < comunesSize; i++) {
-            resultado[i] = comunes[i];
+        // Restaurar la pila original
+        while (!tempStack.isEmpty()) {
+            stack.add(tempStack.getTop());
+            tempStack.remove();
         }
  
-        return resultado;
+        return result;
+    }
+ 
+    private static boolean containsValue(StaticPriorityQueue queue, int value) {
+        StaticPriorityQueue temp = cloneQueue(queue);
+        while (!temp.isEmpty()) {
+            if (temp.getFirst() == value) {
+                return true;
+            }
+            temp.remove();
+        }
+        return false;
+    }
+ 
+    private static StaticPriorityQueue cloneQueue(StaticPriorityQueue original) {
+        StaticPriorityQueue copy = new StaticPriorityQueue();
+        StaticPriorityQueue temp = new StaticPriorityQueue();
+ 
+        while (!original.isEmpty()) {
+            int val = original.getFirst();
+            int pri = original.getPriority();
+            original.remove();
+            temp.add(pri, val);
+        }
+ 
+        while (!temp.isEmpty()) {
+            int val = temp.getFirst();
+            int pri = temp.getPriority();
+            temp.remove();
+            original.add(pri, val);
+            copy.add(pri, val);
+        }
+ 
+        return copy;
     }
 }
