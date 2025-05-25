@@ -106,8 +106,49 @@ INSERT INTO Pases (Legajo, FechaDesde, CodigoClub) VALUES
 (102, '2020-06-01', 3);
 
 
-
-
-
 -- Modelo 10
+INSERT INTO Clubes (Codigo, Nombre) VALUES
+(100, 'Boca Juniors'),
+(101, 'River Plate'),
+(102, 'San Lorenzo'),
+(103, 'Independiente');
 
+INSERT INTO Jugadoras (Legajo, Nombre, Apellido, DNI) VALUES
+(1, 'Lucía', 'Pérez', '12345678'),
+(2, 'Mariana', 'Gómez', '23456789'),
+(3, 'Carla', 'Fernández', '34567890');
+
+-- Jugadora 1: dos pases sin superposición
+INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
+VALUES (1, '2022-01-01', '2022-12-31', 100);
+
+INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
+VALUES (1, '2023-01-01', '2023-12-31', 101);
+
+-- Jugadora 2: pase sin FechaHasta (en curso)
+INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
+VALUES (2, '2024-01-01', NULL, 102);
+
+-- Se superpone con el primer pase de jugadora 1
+INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
+VALUES (1, '2022-06-01', '2022-12-01', 102); -- ❌ Superposición
+
+-- Se superpone con el segundo pase de jugadora 1
+INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
+VALUES (1, '2023-06-01', '2024-01-01', 103); -- ❌ Superposición
+
+-- Se superpone con el pase abierto de jugadora 2
+INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
+VALUES (2, '2024-05-01', '2024-12-31', 101); -- ❌ Superposición
+
+-- Este no funciona, no permito modificar el pasado. 
+UPDATE Pases
+SET FechaHasta = '2022-11-30'
+WHERE Legajo = 1 AND FechaDesde = '2022-01-01';
+
+UPDATE Pases
+SET FechaHasta = '2025-06-06', FechaDesde = '2025-06-03'
+WHERE Legajo = 2 AND CodigoClub = 102
+ 
+INSERT INTO Pases
+VALUES (2, '2024-01-04', NULL, 103)
