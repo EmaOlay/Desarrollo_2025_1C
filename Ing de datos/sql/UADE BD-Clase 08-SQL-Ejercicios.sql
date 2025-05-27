@@ -283,3 +283,65 @@ FROM   clientes c
 WHERE  p2.producto_cod < 1010
 GROUP BY c.cliente_num, c.apellido, c.nombre, r.cliente_num, r.apellido, r.nombre
 ORDER BY c.cliente_num, r.cliente_num;
+
+-- 14.
+-- Crear una consulta que devuelva: Para aquellos 3 estados de mayor facturación el
+-- Código de estado, número cliente, nombre, apellido, promedio de orden de compra por
+-- cliente, total comprado por cliente y total comprado por estado. Solo tener en cuenta
+-- aquellas líneas de ítems que hayan facturado mas de $1000.
+-- Ordenar la consulta por el monto facturado total por estado en forma descendente y por
+-- monto facturado por cliente también en forma descendente.
+WITH CTE1 AS (
+SELECT
+            f.factura_num,
+            fa.provincia_cod,
+            SUM(fd.cantidad * fd.precio_unit) OVER (PARTITION BY fa.provincia_cod) AS total_provincia,
+            c.cliente_num,
+            c.nombre,
+            c.apellido,
+            fd.cantidad,
+            fd.precio_unit
+    FROM   facturas_det fd
+        INNER JOIN facturas f
+            ON f.factura_num = fd.factura_num
+        INNER JOIN clientes c
+            ON c.cliente_num = f.cliente_num
+        INNER JOIN productos p
+            ON fd.producto_cod = p.producto_cod
+        INNER JOIN fabricantes fa
+            ON p.fabricante_cod = fa.fabricante_cod
+        INNER JOIN provincias prov
+            ON prov.provincia_cod = fa.provincia_cod
+    WHERE (fd.cantidad * fd.precio_unit) > 1000
+    GROUP BY f.factura_num, fa.provincia_cod, c.cliente_num, c.nombre, c.apellido, fd.cantidad, fd.precio_unit
+),
+CTE2 AS (
+    SELECT             
+            fa.provincia_cod,
+            SUM(fd.cantidad * fd.precio_unit),-- Innecesario pero lindo
+            ROW_NUMBER() OVER (ORDER BY sum(fd.cantidad * fd.precio_unit) DESC, fa.provincia_cod) AS rn
+    FROM   facturas_det fd
+        INNER JOIN facturas f
+            ON f.factura_num = fd.factura_num
+        INNER JOIN clientes c
+            ON c.cliente_num = f.cliente_num
+        INNER JOIN productos p
+            ON fd.producto_cod = p.producto_cod
+        INNER JOIN fabricantes fa
+            ON p.fabricante_cod = fa.fabricante_cod
+        INNER JOIN provincias prov
+            ON prov.provincia_cod = fa.provincia_cod
+    GROUP BY fa.provincia_cod
+)
+SELECT 
+    CTE1.provincia_cod,
+    cliente_num,
+    nombre,
+    apellido,
+    SUM(cantidad * precio_unit)/COUNT(DISTINCT factura_num) AS promedio_orden_compra,
+    SUM(cantidad * precio_unit) AS total_comprado_cliente
+    FROM CTE1
+    INNER JOIN CTE2
+        ON CTE1.provincia_cod = CTE2.provincia_cod
+    WHERE rn <= 3
+GROUP BY CTE1.provincia_cod, cliente_num, nombre, apellido
