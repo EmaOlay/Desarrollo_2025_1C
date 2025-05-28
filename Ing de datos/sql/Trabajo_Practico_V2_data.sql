@@ -1,15 +1,12 @@
 -- Crear la base de datos TP
-CREATE DATABASE Trabajo_practico;
+CREATE DATABASE Trabajo_practico_Grupo_1;
 GO
-
 -- Usar la base de datos TP
-USE Trabajo_practico;
+USE Trabajo_practico_Grupo_1;
 
 
 go
--- Crear la tabla personas SIN la restricción de clave primaria en la columna idcreate table personas (id int, nombre varchar(50) not null, apellido varchar(50) not null);;
-GO
-
+-- Creamos la tabla personas SIN la restricción de clave primaria en la columna idcreate table personas (id int, nombre varchar(50) not null, apellido varchar(50) not null);;
 -- Insertar 20 registros de ejemplo en la tabla personas (ahora 'id' puede repetirse)
 INSERT INTO personas (id, nombre, apellido) VALUES
 (1, 'Ana', 'García'),
@@ -34,79 +31,101 @@ INSERT INTO personas (id, nombre, apellido) VALUES
 (19, 'Antonella', 'Silva'),
 (20, 'Gabriel', 'Núñez');
 GO
+/*Fin de datos para el ejercicio 1 y 2*/
 
-CREATE TABLE tabla1 (
-    producto VARCHAR(20),
-    fecha DATE,
-    cantidad INT
-);
 
-CREATE TABLE tabla2 (
-    producto VARCHAR(20),
-    fecha DATE,
-    cantidad INT
-);
+/*Inicio de datos para el ejercicio 4*/
+use Trabajo_practico_Grupo_1;
 
+
+go create table valores(id int not null);
+/*Caso 1*/
+INSERT INTO
+    valores
+VALUES(1),(2),(4),(5),(6),(8)
+/*Caso 2*/
+DELETE FROM valores;
+INSERT INTO
+    valores
+VALUES (-3),(-1),(0),(2),(4),(5),(6),(8)
+/*Fin de datos para el ejercicio 4*/
+
+
+/*Inicio datos ejercicio 6*/
+use Trabajo_practico_Grupo_1;
+
+
+go
+-- Creamos tabla 1 y tabla 2 con igual estructuracreate table tabla1 (producto varchar(20), fecha date, cantidad int);;create table tabla2 (producto varchar(20), fecha date, cantidad int);;
+/*Caso 1 tabla1 y tabla2 son identicas*/
 -- tabla1: datos para producto A en distintos meses
 INSERT INTO tabla1 (producto, fecha, cantidad) VALUES
 ('A', '2025-01-10', 10),
 ('A', '2025-02-15', 5),
 ('A', '2025-03-20', 8),
 ('A', '2025-04-05', 12);
-
 -- tabla2: datos para producto B en distintos meses
 INSERT INTO tabla2 (producto, fecha, cantidad) VALUES
 ('A', '2025-01-10', 10),
 ('A', '2025-02-15', 5),
 ('A', '2025-03-20', 8),
 ('A', '2025-04-05', 12);
+/*FIN Caso 1 tabla1 y tabla2 son identicas*/
+/*Caso 2 tabla1 y tabla2 NO son identicas*/
+DELETE FROM tabla1;
+Delete from tabla2;
+INSERT INTO tabla1 (producto, fecha, cantidad) VALUES
+('A', '2025-01-10', 10),
+('A', '2025-02-15', 5),
+('A', '2025-03-20', 8),
+('A', '2025-04-05', 12);
+-- tabla2: datos para producto B en distintos meses
+INSERT INTO tabla2 (producto, fecha, cantidad) VALUES
+('A', '2025-01-10', 9), -- Diferente cantidad
+('A', '2025-02-15', 5),
+('A', '2025-03-20', 8),
+('A', '2025-04-05', 12);
+/*FIN Caso 2 tabla1 y tabla2 NO son identicas*/
+/*Fin datos Ejercicio 6*/
+
+-- Datos para el ejercicio 8
+use Trabajo_practico_Grupo_1;
+go
+create table clubes (codigo int primary key, nombre varchar(100));
 
 
--- ej 8 datos
-CREATE TABLE Clubes (
-    Codigo INT PRIMARY KEY,
-    Nombre VARCHAR(100)
-);
+create table jugadoras (legajo int primary key, nombre varchar(100), apellido varchar(100), dni varchar(20));
 
-CREATE TABLE Jugadoras (
-    Legajo INT PRIMARY KEY,
-    Nombre VARCHAR(100),
-    Apellido VARCHAR(100),
-    DNI VARCHAR(20)
-);
-
-CREATE TABLE Pases (
-    Legajo INT,
-    FechaDesde DATE,
-    CodigoClub INT,
-    PRIMARY KEY (Legajo, FechaDesde),
-    FOREIGN KEY (Legajo) REFERENCES Jugadoras(Legajo),
-    FOREIGN KEY (CodigoClub) REFERENCES Clubes(Codigo)
-);
-
+-- Default fechaHasta es la fecha de hoy para coincidir con la logica del trigger.
+create table pases (legajo int, fechadesde date,FechaHasta date DEFAULT CAST(GETDATE() AS DATE), codigoclub int, primary key (legajo, fechadesde), foreign key (legajo) references jugadoras(legajo), foreign key (codigoclub) references clubes(codigo));
 -- Clubes
 INSERT INTO Clubes (Codigo, Nombre) VALUES
 (1, 'River Plate'),
 (2, 'Boca Juniors'),
 (3, 'San Lorenzo');
-
 -- Jugadoras
 INSERT INTO Jugadoras (Legajo, Nombre, Apellido, DNI) VALUES
 (101, 'Carla', 'Gómez', '12345678'),
 (102, 'Lucía', 'Martínez', '87654321');
-
 -- Pases
 -- Carla jugó en River desde 2021-01-01 hasta que se fue a Boca en 2022-05-10, y luego sigue ahí
 INSERT INTO Pases (Legajo, FechaDesde, CodigoClub) VALUES
 (101, '2021-01-01', 1),
 (101, '2022-05-10', 2);
-
 -- Lucía jugó en San Lorenzo desde 2020-06-01 y nunca se transfirió
 INSERT INTO Pases (Legajo, FechaDesde, CodigoClub) VALUES
 (102, '2020-06-01', 3);
 
 
--- Modelo 10
+/*Datos ejercicio 10 las tablas fuero creadas previamente*/
+use Trabajo_practico_Grupo_1;
+go
+-- Limpio las tablas
+DELETE FROM Pases;
+DELETE FROM Clubes;
+DELETE FROM Jugadoras;
+
+-- Procedo a insertar los datos de ejemplo
 INSERT INTO Clubes (Codigo, Nombre) VALUES
 (100, 'Boca Juniors'),
 (101, 'River Plate'),
@@ -129,26 +148,44 @@ VALUES (1, '2023-01-01', '2023-12-31', 101);
 INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
 VALUES (2, '2024-01-01', NULL, 102);
 
--- Se superpone con el primer pase de jugadora 1
+/*######## ACA ARRANCAN LOS CASOS DE PRUEBA###########*/
+-- Prueba 1: Inserción que se superpone completamente con un pase existente (debe fallar)
+-- (Jugadora 1 ya tiene pase del '2022-01-01' a '2022-12-31')
 INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
-VALUES (1, '2022-06-01', '2022-12-01', 102); -- ❌ Superposición
+VALUES (1, '2022-03-01', '2022-09-30', 103);
 
--- Se superpone con el segundo pase de jugadora 1
+
+-- Prueba 2: Inserción que envuelve un pase existente (debe fallar)
+-- (Jugadora 1 ya tiene pase del '2022-01-01' a '2022-12-31')
 INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
-VALUES (1, '2023-06-01', '2024-01-01', 103); -- ❌ Superposición
+VALUES (1, '2021-06-01', '2023-06-30', 102);
 
--- Se superpone con el pase abierto de jugadora 2
+
+-- Prueba 3: Inserción que superpone el final de un pase existente (debe fallar)
+-- (Jugadora 1 ya tiene pase del '2022-01-01' a '2022-12-31')
 INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
-VALUES (2, '2024-05-01', '2024-12-31', 101); -- ❌ Superposición
+VALUES (1, '2022-10-01', '2023-03-31', 100);
 
--- Este no funciona, no permito modificar el pasado. 
+
+-- Prueba 4: Inserción que superpone el inicio de un pase existente (debe fallar)
+-- (Jugadora 1 ya tiene pase del '2022-01-01' a '2022-12-31')
+INSERT INTO Pases (Legajo, FechaDesde, FechaHasta, CodigoClub)
+VALUES (1, '2021-09-01', '2022-04-30', 101);
+
+-- UPDATE 1: Modificación de FechaHasta sin superposición (debe tener éxito)
+PRINT 'Intentando UPDATE 1: Extender Pase 1 de Jugadora 1 sin superposición...';
 UPDATE Pases
-SET FechaHasta = '2022-11-30'
+SET FechaHasta = '2022-10-31'
 WHERE Legajo = 1 AND FechaDesde = '2022-01-01';
 
+-- UPDATE 2: Modificación de FechaDesde creando superposición (debe fallar)
+-- El Pase 1 (2022-01-01 a 2022-12-31) y el Pase 2 (2023-01-01 a 2023-12-31)
+-- Intentaremos mover el inicio del Pase 2 a '2022-06-01'
 UPDATE Pases
-SET FechaHasta = '2025-06-06', FechaDesde = '2025-06-03'
-WHERE Legajo = 2 AND CodigoClub = 102
- 
-INSERT INTO Pases
-VALUES (2, '2024-01-04', NULL, 103)
+SET FechaDesde = '2022-06-01'
+WHERE Legajo = 1 AND FechaDesde = '2023-01-01';
+
+-- UPDATE 3: Cambiar FechaHasta de un pase 'NULL' a una fecha específica
+UPDATE Pases
+SET FechaHasta = '2024-12-31'
+WHERE Legajo = 2 AND FechaDesde = '2024-01-01';

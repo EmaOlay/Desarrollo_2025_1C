@@ -1,8 +1,8 @@
--- use [trabajo_practico]
+use Trabajo_practico_Grupo_1;
+GO
 /*Dada una tabla PERSONAS que contenga la siguiente estructura, seleccione las filas
- 
- 
- de la tabla tal que los valores del atributo candidato a ser primary key estén repetidos más de una vez. id (clave candidata) nombre varchar(20) apellido varchar(20)*/
+de la tabla tal que los valores del atributo candidato a ser primary key estén repetidos más de una vez.
+id (clave candidata) nombre varchar(20) apellido varchar(20)*/
 SELECT
     id,
     nombre,
@@ -20,11 +20,17 @@ WHERE
         having
             count(*) > 1
     )
-    /*Realice una sentencia DELETE que borre las filas de la tabla PERSONAS del ejercicio
-     1 que estén duplicadas dejando sólo una fila con cada valor de la clave candidata.*/
-    delete
-delete FROM
+ORDER BY id;
+
+/*Realice una sentencia DELETE que borre las filas de la tabla PERSONAS del ejercicio
+    1 que estén duplicadas dejando sólo una fila con cada valor de la clave candidata.*/
+SELECT
+    count(*) -- Cantidad de personas antes del borrado = 21
+FROM
     dbo.personas
+
+delete FROM
+    personas
 WHERE
     concat(id, nombre, apellido) in (
         SELECT
@@ -51,15 +57,18 @@ WHERE
     );
 
 SELECT
-    count(*)
+    count(*) -- Cantidad de personas despues del borrado = 18, correcto insertamos 3 ids de "mas"
 FROM
     dbo.personas
-    /*Realizar una consulta que devuelva el monto total comprado por cliente en cada
-     provincia de los fabricantes. Las columnas a mostrar son número de cliente, nombre
-     del cliente, apellido del cliente, provincia_desc (de los fabricantes) y monto total
-     comprado. Ordenar la información por número de cliente en forma ascendente y monto
-     total comprado en forma descendente.*/
-    --    use [uade_a_01];
+    
+/*Realizar una consulta que devuelva el monto total comprado por cliente en cada
+    provincia de los fabricantes. Las columnas a mostrar son número de cliente, nombre
+    del cliente, apellido del cliente, provincia_desc (de los fabricantes) y monto total
+    comprado. Ordenar la información por número de cliente en forma ascendente y monto
+    total comprado en forma descendente.*/
+-- volvemos a usar la base de datos de la cursada
+use uade_a_01;
+GO
 SELECT
     c.cliente_num,
     c.nombre,
@@ -84,32 +93,14 @@ ORDER BY
 
 /*Sea una tabla VALORES que tiene un campo numérico secuencial Id, realizar una
  consulta que obtenga el valor del primer espacio libre de ese campo.*/
-CREATE TABLE valores(id int NOT NULL);
-
-INSERT INTO
-    valores
-VALUES
-    (1)
-INSERT INTO
-    valores
-VALUES
-    (2)
-INSERT INTO
-    valores
-VALUES
-    (4)
-INSERT INTO
-    valores
-VALUES
-    (5)
-INSERT INTO
-    valores
-VALUES
-    (6)
-INSERT INTO
-    valores
-VALUES
-    (8) WITH CTE AS (
+-- Volvemos a usar la base de datos nuestra para este ejercicio
+use Trabajo_practico_Grupo_1;
+GO
+-- Consideraciones sobre la consulta:
+-- 1. la consulta busca el primer id libre de manera ascendente
+-- 2. La consulta responde unicamente un id, ya que por consigna queremos unicamente el primer espacio.
+-- 3. La consulta no tiene problemas con ids negativos o cero
+WITH CTE AS (
         SELECT
             id,
             LAG(id) OVER (
@@ -133,91 +124,46 @@ ORDER BY
  vendidas (según la fecha de emisión de la factura). No importa si hay meses de
  diferentes años, se suman como si fueran del mismo año. La información se deberá
  mostrar en forma tabular como se muestra en la figura, ordenada por código de producto*/
-SELECT
-    d.producto_cod,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 1 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Enero,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 2 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Febrero,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 3 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Marzo,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 4 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Abril,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 5 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Mayo,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 6 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Junio,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 7 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Julio,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 8 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Agosto,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 9 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Septiembre,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 10 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Octubre,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 11 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Noviembre,
-    SUM(
-        CASE
-            WHEN MONTH(f.fecha_emision) = 12 THEN d.cantidad
-            ELSE 0
-        END
-    ) AS Diciembre
-FROM
-    facturas f
-    JOIN facturas_det d ON f.factura_num = d.factura_num
-GROUP BY
-    d.producto_cod
+-- volvemos a usar la base de datos de la cursada
+use uade_a_01;
+GO
+SELECT -- En la query principal pido el producto y les doy un alias mas legible a los meses.
+       -- A su vez agrego la validacion ISNULL para obtener todos resultados numericos.
+    producto_cod,
+    ISNULL([1],0) AS Enero,
+    ISNULL([2],0) AS Febrero,
+    ISNULL([3],0) AS Marzo,
+    ISNULL([4],0) AS Abril,
+    ISNULL([5],0) AS Mayo,
+    ISNULL([6],0) AS Junio,
+    ISNULL([7],0) AS Julio,
+    ISNULL([8],0) AS Agosto,
+    ISNULL([9],0) AS Septiembre,
+    ISNULL([10],0) AS Octubre,
+    ISNULL([11],0) AS Noviembre,
+    ISNULL([12],0) AS Diciembre
+FROM -- En esta subquery genero los datos que necesito para el pivot.
+    (SELECT
+        d.producto_cod,
+        MONTH(f.fecha_emision) AS mes,
+        d.cantidad
+    FROM
+        facturas f
+        JOIN facturas_det d ON f.factura_num = d.factura_num
+    ) AS SourceTable
+PIVOT -- aplico la funcion pivot para trasponer los meses como columnas
+(
+    SUM(cantidad) -- Sumo las cantidades por mes,producto
+    FOR mes IN ([1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12])
+) AS PivotTable
 ORDER BY
-    d.producto_cod;
+    producto_cod;
 
 /*Realizar UN query que asegure que dos tablas con la misma estructura tengan
  exactamente la misma cantidad de filas y exactamente los mismos datos en cada
  columna. Es decir, que las tablas sean exactamente iguales.*/
+use Trabajo_practico_Grupo_1;
+GO
 WITH DIFERENCIAS as(
     SELECT
         *
@@ -228,7 +174,7 @@ WITH DIFERENCIAS as(
         *
     FROM
         tabla2
-    UNION
+    UNION -- Hacemos union del except por los casos de 1 que puedan estar en el otro
     SELECT
         *
     FROM
@@ -248,29 +194,37 @@ SELECT
                 DIFERENCIAS
         ) THEN 'son distintas'
         ELSE 'son iguales'
-    END as resultado
-    /*Realizar una consulta que tenga el siguiente formato (los datos son solo de ejemplo)
-     que muestre para cada cliente que tenga referente los distintos niveles de referentes
-     que posee. Cada referente se deberá mostrar en una columna diferente y debe
-     mostrar hasta el tercer nivel si es que existe.*/
+    END as resultado;
+
+/*Realizar una consulta que tenga el siguiente formato (los datos son solo de ejemplo)
+que muestre para cada cliente que tenga referente los distintos niveles de referentes
+que posee. Cada referente se deberá mostrar en una columna diferente y debe
+mostrar hasta el tercer nivel si es que existe.*/
+use uade_a_01;
+GO
 SELECT
-    c1.cliente_num,
-    c1.cliente_ref,
-    c2.cliente_ref,
-    c3.cliente_ref
+    c1.cliente_num, -- Nivel 0 mi cliente
+    c1.cliente_ref, -- Nivel 1 referente del cliente
+    c2.cliente_ref, -- Nivel 2 referente del referente
+    c3.cliente_ref  -- Nivel 3 referente del referente del referente del cliente
 FROM
-    clientes c1
-    LEFT JOIN clientes c2 ON c1.cliente_ref = c2.cliente_num
-    LEFT JOIN clientes c3 ON c2.cliente_ref = c3.cliente_num
+    clientes c1 -- Driver o nivel 0 y nivel 1
+    LEFT JOIN clientes c2 ON c1.cliente_ref = c2.cliente_num -- Nivel 2
+    LEFT JOIN clientes c3 ON c2.cliente_ref = c3.cliente_num -- Nivel 3
 WHERE
     c1.cliente_ref IS NOT NULL
 ORDER BY
     c1.cliente_num
-    /*Dado el siguiente modelo, realice una consulta que permita averiguar en qué equipo juega
-     o jugó una jugadora en una fecha determinada.*/
-    WITH fechita as(
-        SELECT
-            '2023-05-10' as miFechita
+
+
+/*Dado el siguiente modelo, realice una consulta que permita averiguar en qué equipo juega
+o jugó una jugadora en una fecha determinada.*/
+use Trabajo_practico_Grupo_1;
+GO
+WITH fechita as( -- Pongo la fecha aca por prolijidad, para no tener que repetirla N veces en la query
+    -- El legajo lo pongo constante pero podria ponerse aca y joiner por ejemplo.
+    SELECT
+        '2023-05-10' as miFechita
     )
 SELECT
     j.Nombre,
@@ -312,17 +266,19 @@ WHERE
  respecto a la cantidad total de productos vendidos en el país.
  Mostrar la información ordenada por provincia en forma ascendente y cantidad total del
  producto vendido en forma descendente.*/
-SELECT
+use uade_a_01;
+GO
+SELECT --Los cast as int son por cuestiones de redondeo.
     prov.provincia_cod AS Provincia,
     fd.producto_cod AS Producto,
     SUM(fd.cantidad) AS cantidadProductoProvincia,
-    SUM(SUM(fd.cantidad)) OVER (PARTITION BY prov.provincia_cod) AS totalProductosProvincia,
+    SUM(SUM(fd.cantidad)) OVER (PARTITION BY prov.provincia_cod) AS totalProductosProvincia,-- Sumo todas las filas del producto en la provincia
     CAST(
         SUM(fd.cantidad) * 100.0 / SUM(SUM(fd.cantidad)) OVER (PARTITION BY prov.provincia_cod) AS INT
     ) AS [% Cant/total por Provincia],
     CAST(
         SUM(SUM(fd.cantidad)) OVER (PARTITION BY prov.provincia_cod) * 100.0 / SUM(SUM(fd.cantidad)) OVER () AS INT
-    ) AS [% Total Prov / Total país]
+    ) AS [% Total Prov / Total país] -- Notese el ultimo OVER que no tiene particionamiento, es el total del pais
 FROM
     facturas f
     LEFT JOIN facturas_det fd ON f.factura_num = fd.factura_num
@@ -333,48 +289,63 @@ GROUP BY
     prov.provincia_cod,
     fd.producto_cod
 ORDER BY
-    prov.provincia_cod
-    /*Dada el siguiente modelo, desarrolle e implemente un mecanismo que cuando se dé de
-     alta un nuevo pase de una jugadora, controle y evite que la jugadora esté fichada para
-     dos equipos al mismo tiempo (inclusive al mismo). Es decir, que no permita que dos filas
-     en la tabla Pases se superpongan dentro de un periodo para una misma jugadora.*/
+    prov.provincia_cod;
 
 
+/*Dada el siguiente modelo, desarrolle e implemente un mecanismo que cuando se dé de
+alta un nuevo pase de una jugadora, controle y evite que la jugadora esté fichada para
+dos equipos al mismo tiempo (inclusive al mismo). Es decir, que no permita que dos filas
+en la tabla Pases se superpongan dentro de un periodo para una misma jugadora.*/
+use Trabajo_practico_Grupo_1;
+go
+-- DROP TRIGGER trg_evitar_pases_superpuestos;
 CREATE TRIGGER trg_evitar_pases_superpuestos
 ON Pases
 INSTEAD OF INSERT, UPDATE
 AS
 BEGIN
-/* Esta query funciona para poder observar lo que devuelve en caso de obtener una superposicion, en caso contrario no devuelve nada estaria ok. :)   
-SELECT 
-        i.Legajo AS legajo_insertado,
-        i.FechaDesde AS desde_insertado,
-        i.FechaHasta AS hasta_insertado,
-        p.FechaDesde AS desde_existente,
-        p.FechaHasta AS hasta_existente,
-        p.CodigoClub AS club_existente
-    FROM INSERTED i
-    JOIN Pases p
-      ON i.Legajo = p.Legajo
-     AND i.FechaDesde <= ISNULL(p.FechaHasta, GETDATE())
-     AND p.FechaDesde <= ISNULL(i.FechaHasta, GETDATE());
-	 RETURN; */
+    -- Declarar variables para las fechas de inicio y fin del pase a insertar/actualizar
+    DECLARE @FechaDesde_Insertado DATE;
+    DECLARE @FechaHasta_Insertado DATE;
+    DECLARE @Legajo_Insertado INT;
+
+    -- Obtener los valores del pase que se intenta insertar/actualizar
+    SELECT @Legajo_Insertado = Legajo, @FechaDesde_Insertado = FechaDesde, @FechaHasta_Insertado = FechaHasta
+    FROM INSERTED;
+
     -- 1. Chequear superposición con datos existentes
     IF EXISTS (
         SELECT 1
-        FROM INSERTED i
-        JOIN Pases p
-          ON i.Legajo = p.Legajo
-         AND i.FechaDesde <= ISNULL(p.FechaHasta, GETDATE())
-         AND p.FechaDesde <= ISNULL(i.FechaHasta, GETDATE())
+        FROM Pases p
+        WHERE p.Legajo = @Legajo_Insertado
+          -- Excluir el registro que se está actualizando en caso de UPDATE para evitar falsos positivos
+          AND NOT EXISTS (SELECT 1 FROM DELETED d WHERE d.Legajo = p.Legajo AND d.FechaDesde = p.FechaDesde)
+          AND (
+                -- Superposición: el pase existente empieza durante el pase nuevo
+                (p.FechaDesde <= ISNULL(@FechaHasta_Insertado, GETDATE()) AND p.FechaDesde >= @FechaDesde_Insertado)
+                OR
+                -- Superposición: el pase existente termina durante el pase nuevo
+                (ISNULL(p.FechaHasta, GETDATE()) >= @FechaDesde_Insertado AND ISNULL(p.FechaHasta, GETDATE()) <= ISNULL(@FechaHasta_Insertado, GETDATE()))
+                OR
+                -- Superposición: el pase nuevo está contenido completamente dentro de un pase existente
+                (@FechaDesde_Insertado >= p.FechaDesde AND ISNULL(@FechaHasta_Insertado, GETDATE()) <= ISNULL(p.FechaHasta, GETDATE()))
+                OR
+                -- Superposición: un pase existente está contenido completamente dentro del pase nuevo
+                (p.FechaDesde >= @FechaDesde_Insertado AND ISNULL(p.FechaHasta, GETDATE()) <= ISNULL(@FechaHasta_Insertado, GETDATE()))
+                OR
+                -- Superposición: el pase nuevo termina después del inicio del pase existente y empieza antes del fin del pase existente
+                (@FechaDesde_Insertado < ISNULL(p.FechaHasta, GETDATE()) AND ISNULL(@FechaHasta_Insertado, GETDATE()) > p.FechaDesde)
+              )
     )
     BEGIN
-        RAISERROR('Error: la jugadora tiene un pase que se superpone en las fechas.', 16, 1);
+        RAISERROR('Error: la jugadora ya tiene un pase que se superpone con las fechas especificadas.', 16, 1);
         ROLLBACK TRANSACTION;
         RETURN;
     END;
 
     -- 2. Eliminar registros anteriores si se trata de un UPDATE
+    -- Esto es importante para que el UPDATE se comporte como un DELETE + INSERT,
+    -- y no deje el registro antiguo coexistiendo con el nuevo en caso de que solo se modifique una fecha.
     DELETE p
     FROM Pases p
     JOIN DELETED d
@@ -386,3 +357,4 @@ SELECT
     FROM INSERTED;
 END;
 GO
+
