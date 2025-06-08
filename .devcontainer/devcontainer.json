@@ -1,0 +1,28 @@
+// .devcontainer/devcontainer.json
+{
+    "name": "SQL Server Codespace",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app", // This refers to the main service in docker-compose.yml
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "features": {
+        "ghcr.io/devcontainers/features/sshd:1": {
+            "version": "latest"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-mssql.mssql" // The official SQL Server extension for VS Code
+            ]
+        }
+    },
+    "portsAttributes": {
+        "1433": { // SQL Server default port
+            "label": "SQL Server",
+            "onAutoForward": "notify"
+        }
+    },
+    // Use 'postCreateCommand' to run commands after the container is created.
+    "postCreateCommand": "bash .devcontainer/setup.sh",
+    "forwardPorts": [1433]
+}

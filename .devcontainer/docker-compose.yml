@@ -1,0 +1,26 @@
+# .devcontainer/docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile # We'll create this minimal Dockerfile
+    volumes:
+      - ..:/workspaces:cached
+    # Command to keep the container running
+    command: sleep infinity
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'YourStrongPassword123!' # !!! CHANGE THIS TO A STRONG, SECURE PASSWORD !!!
+    ports:
+      - "1433:1433" # Map host port 1433 to container port 1433
+    volumes:
+      # Optional: Persist database data even if the container is rebuilt
+      - dbdata:/var/opt/mssql
+
+volumes:
+  dbdata: # This defines the named volume for persistence
