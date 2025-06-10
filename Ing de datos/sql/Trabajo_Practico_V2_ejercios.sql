@@ -236,7 +236,7 @@ FROM
     JOIN Pases p ON j.Legajo = p.Legajo
     JOIN Clubes c ON p.CodigoClub = c.Codigo
 WHERE
-    j.Legajo = 101
+    j.Legajo = 1
     AND p.FechaDesde <= (
         SELECT
             miFechita
