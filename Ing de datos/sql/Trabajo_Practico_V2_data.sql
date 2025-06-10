@@ -8,6 +8,8 @@ USE Trabajo_practico_Grupo_1;
 go
 -- Creamos la tabla personas SIN la restricción de clave primaria en la columna idcreate table personas (id int, nombre varchar(50) not null, apellido varchar(50) not null);;
 -- Insertar 20 registros de ejemplo en la tabla personas (ahora 'id' puede repetirse)
+CREATE TABLE personas (id INT, nombre VARCHAR(50), apellido VARCHAR(50));
+
 INSERT INTO personas (id, nombre, apellido) VALUES
 (1, 'Ana', 'García'),
 (2, 'Juan', 'Pérez'),
