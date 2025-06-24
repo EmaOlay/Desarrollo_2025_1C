@@ -1,4 +1,20 @@
 -- PArcial de 17/06/2025
+-- 1. El conjunto de valores posibles de una columna de una tabla se denomina dominio.
+-- 2. No cumple la 2NF porque la columna fecha_fundacion_club no depende de la clave primaria 
+-- (jugadora,club,fecha_contrato), sino de la columna club.
+-- Se resuelve creando una tabla Clubes con la columna club y fecha_fundacion_club.
+-- 3. La tabla es idependiente de la secuencia.
+--    La secuencia es un objeto independiente de la tabla, que se puede usar para generar valores únicos.
+--    La secuencia se puede utilizar para generar muchos valores únicos,
+--    verdaderas a,b y c
+-- 4. Niveles de aislamiento de transacciones:
+--    a. Read Uncommitted: Permite leer datos no confirmados por otras transacciones.
+--    b. Read Committed: Permite leer solo datos confirmados por otras transacciones
+--    c. Repeatable Read: Garantiza que los datos leídos no cambien durante la transacción.
+--    d. Serializable: Garantiza que las transacciones se ejecuten de manera secuencial,
+--       evitando cualquier tipo de interferencia entre ellas.
+-- 5. Como se recupera la DB? Lee de los logs las transacciones no commiteadas y las aplica.
+--    El componenete clave para hacer esto es el log de transacciones.
 --6.
 WITH CTE AS (
 	Select 
