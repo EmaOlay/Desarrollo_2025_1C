@@ -1,8 +1,0 @@
-Invariantes de la estructura de datos Cola con Array Circular:
-
-1.  El índice 'front' siempre debe estar dentro del rango [0, capacidad - 1] o ser igual a 'rear' si la cola está vacía.
-2.  El índice 'rear' siempre debe estar dentro del rango [0, capacidad - 1].
-3.  El atributo 'size' (número de elementos) siempre debe ser un valor no negativo y menor o igual a la 'capacidad'.
-4.  La condición para que la cola esté vacía es que 'size' sea 0 (o 'front' sea igual a 'rear').
-5.  La condición para que la cola esté llena es que 'size' sea igual a 'capacidad' (o que el siguiente índice de 'rear' sea igual a 'front', teniendo en cuenta el módulo 'capacidad').
-6.  Los elementos válidos de la cola siempre deben estar ubicados en el rango lógico definido por 'front' y 'rear' dentro del array, considerando el posible envoltorio circular. Las posiciones fuera de este rango lógico no deben considerarse parte de la cola.
