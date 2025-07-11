@@ -1,0 +1,14 @@
+# Estrategia para Ejercicio 2: Árbol Binario y Matriz Identidad
+
+Objetivo: Verificar si un árbol binario representa una matriz identidad, usando un recorrido iterativo sin colecciones de la JRE.
+
+1.  Interpretación de "Matriz Identidad":
+    * El árbol debe tener una estructura que pueda formar una matriz cuadrada (ej., número total de nodos es un cuadrado perfecto).
+    * Los valores de los nodos, al ser recorridos en orden por niveles (level-order), deben simular una matriz identidad (1s en diagonal, 0s fuera de diagonal, asumiendo valores binarios). La figura 1 solo muestra el orden de recorrido, no los valores esperados.
+2.  Recorrido Iterativo:
+    * Prohibido usar 'java.util.Queue' o 'java.util.PriorityQueue'.
+    * Simular una cola (o usar dos pilas) con arrays primitivos para realizar el recorrido por niveles.
+3.  Funciones Auxiliares (Recursivas permitidas):
+    * Calcular altura y total de nodos puede hacerse recursivamente.
+4.  Verificación:
+    * Comparar los valores obtenidos en el recorrido iterativo con el patrón de una matriz identidad de 0s y 1s, basado en las "coordenadas" inferidas de cada nodo en el recorrido por niveles.

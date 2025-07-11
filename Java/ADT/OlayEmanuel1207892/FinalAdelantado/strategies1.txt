@@ -1,0 +1,18 @@
+# Estrategia para Ejercicio 1: Diccionario
+
+Objetivo: Modificar el TDA Dictionary para que una clave pueda almacenar hasta n+1 valores. Si hay múltiples valores, devolver uno aleatoriamente.
+
+1.  Implementación "desde cero":
+    * Usar arrays primitivos (sin colecciones de la JRE).
+    * Sin genéricos.
+    * Manejo manual de tamaño y redimensionamiento de arrays.
+2.  Estructura de la entrada:
+    * Cada clave asocia un array interno de valores (de tipo int) con capacidad n+1.
+3.  Determinación de 'n':
+    * El valor 'n' se obtiene de la función P(n) basada en el L.U.
+4.  Método 'add(k, v)':
+    * Si 'k' ya existe, añadir 'v' a su array de valores si hay espacio.
+    * Si 'k' no existe, crear nueva entrada y añadir 'v'.
+5.  Método 'getValue(k)':
+    * Buscar 'k'. Si se encuentra, devolver un valor aleatorio de su array asociado.
+    * Lanzar excepción si la clave no existe.

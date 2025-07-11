@@ -1,0 +1,15 @@
+# Estrategia para Ejercicio 3: Preguntas Teóricas
+
+## Pregunta 1: Árboles Binarios Distintos
+
+Tenemos cuatro números α, β, γ y δ. ¿Cuántos árboles binarios distintos (en cuanto a su forma o estructura) se pueden formar que tengan estos números en sus nodos, y sabiendo que no hay otros nodos?
+
+Respuesta: Se pueden formar 14 árboles binarios distintos con cuatro nodos. La relación entre los valores (α > β < γ > δ) no afecta la cantidad de posibles *estructuras* del árbol, solo cómo los valores se podrían colocar dentro de esas estructuras si se formara un BST.
+Solo 1 de estos podría ser un Árbol Binario de Búsqueda (SBT) para un conjunto de 4 valores distintos.
+
+## Árbol
+     β
+     / \
+    δ   γ
+         \
+          α
