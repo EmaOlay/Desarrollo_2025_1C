@@ -7,10 +7,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map; // Importar Map
-import java.util.LinkedHashMap; // Importar LinkedHashMap para mantener el orden
+import java.util.Map;
+import java.util.LinkedHashMap;
 
-// Importar la clase TitledBorder para resolver los campos DEFAULT_JUSTIFICATION y DEFAULT_POSITION
 import javax.swing.border.TitledBorder;
 
 public class MainFrame extends JFrame {
@@ -22,29 +21,26 @@ public class MainFrame extends JFrame {
     private JTextField campoPartido;
     private JTextArea areaResultado;
     private JButton botonAsignar;
-    private JButton botonLiberar; // Nuevo botón para liberar
+    private JButton botonLiberar;
 
-    // Usaremos una lista para gestionar las JCheckBox de servicios dinámicamente
     private List<JCheckBox> servicioCheckBoxes;
-    // Mapa para almacenar los objetos ServiciosExtras y sus CheckBoxes asociadas
     private Map<String, ServiciosExtras> serviciosDisponibles;
 
     private GestorReserva gestorReserva;
 
-    // Esta lista ahora representa TODOS los apartamentos, disponibles o no.
     private List<Apartamento> todosLosApartamentos; 
 
     public MainFrame() {
         setTitle("Gestión de Apartamentos");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(850, 750); // Ajustar tamaño para más información
+        setSize(850, 750);
         setLocationRelativeTo(null);
         
         inicializarDatos();
         gestorReserva = new GestorReserva();
         
         initUI();
-        actualizarComboBoxApartamentos(); // Llama a este método al inicio para poblar el combo box
+        actualizarComboBoxApartamentos();
     }
 
     private void inicializarDatos() {
@@ -56,16 +52,14 @@ public class MainFrame extends JFrame {
         todosLosApartamentos.add(new ApartamentoProletario(203, 1, 800.0, "Apto Proletario 203"));
         todosLosApartamentos.add(new ApartamentoSimple(202, 2, 1700.0, "Apto Simple 202"));
 
-        // Inicializar los servicios disponibles como objetos ServiciosExtras
         serviciosDisponibles = new LinkedHashMap<>();
         serviciosDisponibles.put("Calefacción", new ServiciosExtras("Calefacción", 40.0));
-        serviciosDisponibles.put("Rayo de Sol", new ServiciosExtras("Horas de Luz Solar", 70.0)); // Nombre UI a nombre canónico
+        serviciosDisponibles.put("Rayo de Sol", new ServiciosExtras("Horas de Luz Solar", 70.0));
         serviciosDisponibles.put("Aire Fresco", new ServiciosExtras("Aire Fresco", 60.0));
         serviciosDisponibles.put("Internet", new ServiciosExtras("Internet", 50.0));
         serviciosDisponibles.put("Limpieza", new ServiciosExtras("Limpieza", 30.0));
         serviciosDisponibles.put("Lavandería", new ServiciosExtras("Lavandería", 20.0));
 
-        // Inicializar la lista de CheckBoxes
         servicioCheckBoxes = new ArrayList<>();
     }
 
@@ -126,14 +120,13 @@ public class MainFrame extends JFrame {
         panelServicios.setBorder(BorderFactory.createTitledBorder(null, "Servicios extra",
                                   TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, titleFont));
 
-        // Generación dinámica de JCheckBoxes de servicios usando los objetos ServiciosExtras
         for (Map.Entry<String, ServiciosExtras> entry : serviciosDisponibles.entrySet()) {
-            String uiName = entry.getKey(); // Nombre para la UI
-            ServiciosExtras servicio = entry.getValue(); // Objeto ServiciosExtras
+            String uiName = entry.getKey();
+            ServiciosExtras servicio = entry.getValue();
 
             JCheckBox cb = new JCheckBox(uiName + " ($" + String.format("%.0f", servicio.getPrecio()) + ")");
             cb.setFont(largeFont);
-            servicioCheckBoxes.add(cb); // Añadir a la lista
+            servicioCheckBoxes.add(cb);
             panelServicios.add(cb);
         }
 
@@ -166,12 +159,9 @@ public class MainFrame extends JFrame {
         add(panelInferior, BorderLayout.SOUTH);
     }
 
-    /**
-     * Actualiza el JComboBox de apartamentos para reflejar su disponibilidad.
-     */
     private void actualizarComboBoxApartamentos() {
-        comboApartamentos.removeAllItems(); // Limpiar ítems existentes
-        for (Apartamento apto : todosLosApartamentos) { // Iterar sobre todos los apartamentos
+        comboApartamentos.removeAllItems();
+        for (Apartamento apto : todosLosApartamentos) {
             String estado = apto.isDisponible() ? "Disponible" : "Ocupado";
             comboApartamentos.addItem(apto.getTipo() + " " + apto.getNumero() + " (" + estado + ") | Base: $" + String.format("%.2f", apto.getPrecioBase()));
         }
@@ -179,7 +169,7 @@ public class MainFrame extends JFrame {
 
     private void asignarApartamento(ActionEvent e) {
         String nombre = campoNombre.getText().trim();
-        String numeroLibreta = campoNumeroLibreta.getText().trim();
+        String numeroLibretaString = campoNumeroLibreta.getText().trim(); // Obtener como String
         String mesString = campoMes.getText().trim();
         String partido = campoPartido.getText().trim();
         
@@ -190,10 +180,19 @@ public class MainFrame extends JFrame {
         }
         Apartamento apartamentoSeleccionado = todosLosApartamentos.get(selectedApartmentIndex);
 
-        if (nombre.isEmpty() || numeroLibreta.isEmpty() || mesString.isEmpty() || partido.isEmpty()) {
+        if (nombre.isEmpty() || numeroLibretaString.isEmpty() || mesString.isEmpty() || partido.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos obligatorios.", "Campos Vacíos", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        // *** Validación para el campoNumeroLibreta ***
+        try {
+            Long.parseLong(numeroLibretaString); // Intentar parsear a Long para asegurar que es un número
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Error: El número de libreta debe ser un valor numérico válido.", "Número de Libreta Inválido", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        // *** Fin de la validación ***
         
         // Validación para el campoMes
         int mes;
@@ -213,13 +212,13 @@ public class MainFrame extends JFrame {
             return;
         }
 
-        Inquilino inquilino = new Inquilino(nombre, numeroLibreta, apartamentoSeleccionado, partido);
+        // Se usa numeroLibretaString directamente para crear el Inquilino, ya que el modelo Inquilino
+        // lo espera como String. La validación numérica ya se hizo.
+        Inquilino inquilino = new Inquilino(nombre, numeroLibretaString, apartamentoSeleccionado, partido);
 
-        // Recopilar objetos ServiciosExtras seleccionados
         List<ServiciosExtras> serviciosSeleccionados = new ArrayList<>();
         for (JCheckBox cb : servicioCheckBoxes) {
             if (cb.isSelected()) {
-                // Extraer el nombre de la UI (ej. "Calefacción")
                 String uiName = cb.getText().substring(0, cb.getText().lastIndexOf(" ($"));
                 ServiciosExtras servicio = serviciosDisponibles.get(uiName);
                 if (servicio != null) {
@@ -229,13 +228,11 @@ public class MainFrame extends JFrame {
         }
 
         try {
-            // Pasar la lista de objetos ServiciosExtras
             Reserva nuevaReserva = gestorReserva.crearReserva(apartamentoSeleccionado, inquilino, mesString, serviciosSeleccionados);
             if (nuevaReserva != null) {
                 areaResultado.setText(nuevaReserva.obtenerDetallesReserva());
-                actualizarComboBoxApartamentos(); // Actualizar el combo box después de una reserva exitosa
+                actualizarComboBoxApartamentos();
                 JOptionPane.showMessageDialog(this, "Reserva realizada con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                // Limpiar campos y desmarcar servicios
                 campoNombre.setText("");
                 campoNumeroLibreta.setText("");
                 campoMes.setText("");
@@ -249,9 +246,6 @@ public class MainFrame extends JFrame {
         }
     }
 
-    /**
-     * Listener para el botón "Liberar Apartamento".
-     */
     private void liberarApartamento(ActionEvent e) {
         int selectedApartmentIndex = comboApartamentos.getSelectedIndex();
         if (selectedApartmentIndex == -1) {
@@ -262,7 +256,7 @@ public class MainFrame extends JFrame {
 
         if (gestorReserva.liberarApartamento(apartamentoSeleccionado)) {
             JOptionPane.showMessageDialog(this, "Apartamento " + apartamentoSeleccionado.getNumero() + " ha sido liberado con éxito.", "Apartamento Liberado", JOptionPane.INFORMATION_MESSAGE);
-            actualizarComboBoxApartamentos(); // Actualizar el combo box para reflejar el cambio de estado
+            actualizarComboBoxApartamentos();
         } else {
             JOptionPane.showMessageDialog(this, "El apartamento " + apartamentoSeleccionado.getNumero() + " ya estaba disponible o no se pudo liberar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
